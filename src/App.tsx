@@ -9,6 +9,7 @@ import DashboardView from "./pages/dashboard/DashboardView";
 import OpportunitiesView from "./pages/opportunities/OpportunitiesView";
 import OpportunityDetailsView from "./pages/opportunities/OpportunityDetailsView";
 import FollowUpsView from "./pages/followUps/FollowUpsView";
+import Client_Opportunities_Table from "./components/customers/clientOpportunitiesTable";
 
 const router = createBrowserRouter([
     // Dashboard
@@ -49,5 +50,7 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  return <RouterProvider router={router} />
+  return <>
+    <Client_Opportunities_Table />
+  </>
 }

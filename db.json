@@ -1,0 +1,220 @@
+{
+    "customers": [
+      { "id": 1, "nit": "123456789", "name": "Company A", "address": "123 Main St", "city": "Bogotá", "country": "Colombia", "phone": "123-456-7890", "email": "contact@companya.com", "active": true },
+      { "id": 2, "nit": "987654321", "name": "Company B", "address": "456 Market St", "city": "Medellín", "country": "Colombia", "phone": "987-654-3210", "email": "info@companyb.com", "active": false },
+      { "id": 3, "nit": "135792468", "name": "Company C", "address": "789 Broadway", "city": "Cali", "country": "Colombia", "phone": "135-792-4680", "email": "sales@companyc.com", "active": true }
+    ],
+    "opportunities": [
+        {
+            "id": "1",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Implementation of External Resources",
+            "businessLine": "outsourcing resources",
+            "opportunityDescription": "Hiring specialized IT personnel for short-term projects.",
+            "estimatedValue": 50000000,
+            "estimatedCompletionDate": "2024-03-15",
+            "status": "Under Study"
+        },
+        {
+            "id": "2",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Corporate Web Portal",
+            "businessLine": "web development",
+            "opportunityDescription": "Development of a web portal with advanced e-commerce functions.",
+            "estimatedValue": 150000000,
+            "estimatedCompletionDate": "2024-05-20",
+            "status": "Opening"
+        },
+        {
+            "id": "3",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Corporate Mobile Application",
+            "businessLine": "mobile development",
+            "opportunityDescription": "Development of a mobile app for real-time inventory management.",
+            "estimatedValue": 75000000,
+            "estimatedCompletionDate": "2027-04-10",
+            "status": "Executed"
+        },
+        {
+            "id": "4",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "IT Infrastructure Consulting",
+            "businessLine": "IT consulting",
+            "opportunityDescription": "Analysis and optimization of network and server infrastructure.",
+            "estimatedValue": 60000000,
+            "estimatedCompletionDate": "2025-05-01",
+            "status": "Purchase Order"
+        },
+        {
+            "id": "5",
+            "client": "Catbaster Network S.A.",
+            "businessName": "IT Infrastructure Consulting",
+            "businessLine": "IT consulting",
+            "opportunityDescription": "Analysis and optimization of network and server infrastructure.",
+            "estimatedValue": 60000000,
+            "estimatedCompletionDate": "2024-06-01",
+            "status": "Under Study"
+        },
+        {
+            "id": "6",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Data Analytics Platform",
+            "businessLine": "data analytics",
+            "opportunityDescription": "Development of a platform for real-time data analysis.",
+            "estimatedValue": 90000000,
+            "estimatedCompletionDate": "2025-01-30",
+            "status": "Opening"
+        },
+        {
+            "id": "7",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Cybersecurity Assessment",
+            "businessLine": "cybersecurity",
+            "opportunityDescription": "Comprehensive security audit to identify potential vulnerabilities.",
+            "estimatedValue": 40000000,
+            "estimatedCompletionDate": "2024-12-05",
+            "status": "Under Study"
+        },
+        {
+            "id": "8",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Supply Chain Management Software",
+            "businessLine": "software development",
+            "opportunityDescription": "Custom software for managing the company's supply chain.",
+            "estimatedValue": 110000000,
+            "estimatedCompletionDate": "2025-06-20",
+            "status": "Executed"
+        },
+        {
+            "id": "9",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Customer Relationship Management System",
+            "businessLine": "CRM",
+            "opportunityDescription": "Implementing a CRM system to enhance customer engagement.",
+            "estimatedValue": 95000000,
+            "estimatedCompletionDate": "2024-09-25",
+            "status": "Under Study"
+        },
+        {
+            "id": "10",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Human Resources Management System",
+            "businessLine": "HR systems",
+            "opportunityDescription": "Developing an HR system for employee management and payroll.",
+            "estimatedValue": 80000000,
+            "estimatedCompletionDate": "2025-04-05",
+            "status": "Purchase Order"
+        },
+        {
+            "id": "11",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Digital Marketing Automation",
+            "businessLine": "digital marketing",
+            "opportunityDescription": "Automating digital marketing campaigns to improve efficiency.",
+            "estimatedValue": 70000000,
+            "estimatedCompletionDate": "2024-11-15",
+            "status": "Executed"
+        },
+        {
+            "id": "12",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "IoT Integration for Smart Factory",
+            "businessLine": "IoT",
+            "opportunityDescription": "Integrating IoT solutions for smart factory operations.",
+            "estimatedValue": 160000000,
+            "estimatedCompletionDate": "2026-02-10",
+            "status": "Under Study"
+        },
+        {
+            "id": "13",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "E-Learning Platform Development",
+            "businessLine": "education technology",
+            "opportunityDescription": "Creating an e-learning platform for remote training.",
+            "estimatedValue": 55000000,
+            "estimatedCompletionDate": "2025-08-30",
+            "status": "Under Study"
+        },
+        {
+            "id": "14",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Big Data Infrastructure Setup",
+            "businessLine": "data infrastructure",
+            "opportunityDescription": "Setting up big data infrastructure for high-volume data processing.",
+            "estimatedValue": 200000000,
+            "estimatedCompletionDate": "2025-12-01",
+            "status": "Opening"
+        },
+        {
+            "id": "15",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Document Management System",
+            "businessLine": "document management",
+            "opportunityDescription": "Implementing a document management system for better organization.",
+            "estimatedValue": 45000000,
+            "estimatedCompletionDate": "2024-07-12",
+            "status": "Executed"
+        },
+        {
+            "id": "16",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "API Gateway for Integrations",
+            "businessLine": "API development",
+            "opportunityDescription": "Developing an API gateway to streamline integrations.",
+            "estimatedValue": 50000000,
+            "estimatedCompletionDate": "2025-03-30",
+            "status": "Under Study"
+        },
+        {
+            "id": "17",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "ERP Customization",
+            "businessLine": "ERP solutions",
+            "opportunityDescription": "Customization of ERP system to meet specific business needs.",
+            "estimatedValue": 120000000,
+            "estimatedCompletionDate": "2024-10-18",
+            "status": "Opening"
+        },
+        {
+            "id": "18",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Remote Work Solutions",
+            "businessLine": "IT infrastructure",
+            "opportunityDescription": "Implementing remote work solutions for the workforce.",
+            "estimatedValue": 68000000,
+            "estimatedCompletionDate": "2024-06-15",
+            "status": "Purchase Order"
+        },
+        {
+            "id": "19",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "AI Customer Service Bot",
+            "businessLine": "artificial intelligence",
+            "opportunityDescription": "Creating an AI chatbot for customer service.",
+            "estimatedValue": 57000000,
+            "estimatedCompletionDate": "2025-02-28",
+            "status": "Executed"
+        },
+        {
+            "id": "20",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Predictive Maintenance System",
+            "businessLine": "machine learning",
+            "opportunityDescription": "Developing a predictive maintenance system for equipment.",
+            "estimatedValue": 80000000,
+            "estimatedCompletionDate": "2026-01-15",
+            "status": "Opening"
+        },
+        {
+            "id": "21",
+            "client": "Inversiones Globales S.A.",
+            "businessName": "Blockchain for Supply Chain",
+            "businessLine": "blockchain",
+            "opportunityDescription": "Implementing blockchain for transparency in the supply chain.",
+            "estimatedValue": 90000000,
+            "estimatedCompletionDate": "2025-10-25",
+            "status": "Under Study"
+        }
+    ],
+    "followUps": []
+}
