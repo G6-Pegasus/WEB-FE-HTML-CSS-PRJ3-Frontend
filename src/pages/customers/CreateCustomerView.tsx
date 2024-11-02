@@ -1,5 +1,11 @@
+import ClientTable from '../../components/customers/listCustomers';
+
 const CreateCustomerView = () => {
-    return <div>CreateCustomerView</div>
+    return (
+        <div>
+            <ClientTable />
+        </div>
+    );
 }
 
-export default CreateCustomerView
+export default CreateCustomerView;
