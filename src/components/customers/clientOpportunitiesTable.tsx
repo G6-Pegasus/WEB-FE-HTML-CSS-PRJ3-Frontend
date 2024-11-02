@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query'
 import { opportunity } from '../../utils/types'
 import { format, differenceInMonths } from 'date-fns'
@@ -6,17 +7,47 @@ export default function clientOpportunitiesTable() {
     const { data: opportunities, error, isLoading } = useQuery<opportunity[], Error>({
         queryKey: ['opportunities'],
         queryFn: async () => {
-          const response = await fetch('https://web-fe-html-css-prj3-backend.onrender.com/opportunities')
+          const response = await fetch('http://localhost:3001/opportunities')
           if (!response.ok) throw new Error('An error occurred while fetching the information. The server has rejected the connection.')
           return response.json() as Promise<opportunity[]>
         }
-    })
- 
+    });
+
     if (isLoading) return <div>Loading content, please be patient...</div>
     if (error) return <div>An error occurred while fetching the information. Contact technical support and show them this code: {error.message}.</div>
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [viewAll, setViewAll] = useState(false);
+
+    const handleViewAllClick = () => {
+        if (viewAll) {
+            setRowsPerPage(5);
+        } else {
+            setRowsPerPage(opportunitiesClient.length);
+            setCurrentPage(1);
+        }
+        setViewAll(!viewAll);
+    };
+ 
+    const opportunitiesClient = opportunities.filter(opportunity => opportunity.client === "Inversiones Globales S.A.");
+
+    const totalPages = Math.ceil((opportunitiesClient?.length || 0) / rowsPerPage);    
+    const currentRows = opportunitiesClient?.slice(
+        (currentPage - 1) * rowsPerPage, 
+        Math.min(currentPage * rowsPerPage, opportunities.length)
+    );
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) setCurrentPage(currentPage - 1);
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    };
+
     return (
-        <div className="mx-auto">
+        <div className="mx-auto max-h-96">
             <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
                 <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
                     <div className="flex items-center justify-between ">
@@ -27,8 +58,8 @@ export default function clientOpportunitiesTable() {
                         <div className="flex flex-col gap-2 shrink-0 sm:flex-row">
                             <button
                             className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                            type="button">
-                            View All
+                            type="button" onClick={handleViewAllClick}>
+                                {viewAll ? 'View Less' : 'View All'}
                             </button>
                             <button
                             className="flex select-none items-center gap-2 rounded bg-slate-800 py-2.5 px-4 text-xs font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
@@ -44,12 +75,12 @@ export default function clientOpportunitiesTable() {
                         </div>
                     </div>                
                 </div>
-                <div className="p-0 overflow-x-auto max-w-full">
+                <div className="p-0 max-w-full overflow-y-auto max-h-96">
                     <table className="w-full mt-4 text-left table-auto min-w-max">
-                        <thead>
+                        <thead className="sticky top-0 bg-white bg-opacity-100 z-10">
                             <tr>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48">
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Task
@@ -61,7 +92,7 @@ export default function clientOpportunitiesTable() {
                                     </p>
                                 </th>                        
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48">
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Description
@@ -73,7 +104,7 @@ export default function clientOpportunitiesTable() {
                                     </p>
                                 </th>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40">
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Status
@@ -85,7 +116,7 @@ export default function clientOpportunitiesTable() {
                                     </p>
                                 </th>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40">
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500 max-w-xs break-words">
                                     Estimated Closing Date
@@ -97,7 +128,7 @@ export default function clientOpportunitiesTable() {
                                     </p>
                                 </th>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40">
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Estimated Cost
@@ -109,30 +140,20 @@ export default function clientOpportunitiesTable() {
                                     </p>
                                 </th>
                                 <th
-                                    className="p-4 transition-colors border-y border-slate-200 bg-slate-50 ">                        
-                                </th>
-                                <th
-                                    className="p-4 transition-colors border-y border-slate-200 bg-slate-50 ">                                    
-                                </th>
-                                <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100">
-                                    <p
-                                    className="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500">
-                                    </p>
-                                </th>
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40">                        
+                                </th>                                                               
                             </tr>
-                        </thead>
+                        </thead>                        
                         <tbody>
-                            {opportunities?.filter(opportunity => opportunity.client === "Inversiones Globales S.A.").map(opportunity => {
+                            {currentRows?.filter(opportunity => opportunity.client === "Inversiones Globales S.A.").map(opportunity => {
                                 const estimatedCompletionDate = new Date(opportunity.estimatedCompletionDate)
                                 const currentDate = new Date()
                                 const monthsDifference = differenceInMonths(estimatedCompletionDate, currentDate)
 
-                                const dateClass = monthsDifference <= 3 ? 'text-red-900 bg-red-500/20' : monthsDifference <= 6 ? 'text-yellow-900 bg-yellow-500/20' : 'text-green-900 bg-green-500/20';
-
+                                const dateClass = monthsDifference <= 3 ? 'text-red-900 bg-red-500/20' : monthsDifference <= 6 ? 'text-yellow-900 bg-yellow-500/20' : 'text-green-900 bg-green-500/20';                                
                                 return (
                                     <tr key={opportunity.id}>
-                                        <td className="p-4 border-b border-slate-200 max-w-xs break-words">
+                                        <td className="p-4 border-b border-slate-200 w-40 break-words">
                                             <div className="flex flex-col">
                                                 <p className="text-sm font-semibold text-slate-700">
                                                     {opportunity.businessName}
@@ -142,15 +163,15 @@ export default function clientOpportunitiesTable() {
                                                 </p>
                                             </div>
                                         </td>
-                                        <td className="p-4 border-b border-slate-200 max-w-xs break-words">
+                                        <td className="p-4 border-b border-slate-200 w-40 break-words">
                                             <div className="flex flex-col">
                                                 <p className="text-sm text-slate-500">
                                                     {opportunity.opportunityDescription}
                                                 </p>
                                             </div>
                                         </td>                                
-                                        <td className="p-4 border-b border-slate-200">
-                                            <div className={`p-4 border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${
+                                        <td className="p-4 border-b border-slate-200 w-40 break-words">
+                                            <div className={`border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${
                                             opportunity.status === 'Executed' ? 'text-green-900 bg-green-500/20' :
                                             opportunity.status === 'Under Study' ? 'text-blue-900 bg-blue-500/20' :
                                             opportunity.status === 'Purchase Order' ? 'text-purple-900 bg-purple-500/20' :
@@ -160,15 +181,15 @@ export default function clientOpportunitiesTable() {
                                             </div>                                    
                                         </td>
                                         <td className="p-4 border-b border-slate-200">                                        
-                                            <div className={`p-4 border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${dateClass}`}>
+                                            <div className={`border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${dateClass}`}>
                                                 {format(estimatedCompletionDate, 'dd/MM/yyyy')}
                                             </div>
                                         </td>
                                         <td className="p-4 border-b border-slate-200 text-right text-green-500 font-bold">
                                             {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'COP' }).format(opportunity.estimatedValue)}
-                                        </td>
+                                        </td>                                        
                                         <td className="p-4 border-b border-slate-200">
-                                            <button
+                                        <button
                                             className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                                             type="button">
                                                 <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
@@ -179,9 +200,7 @@ export default function clientOpportunitiesTable() {
                                                         </path>
                                                     </svg>
                                                 </span>
-                                            </button>                                            
-                                        </td>
-                                        <td className="p-4 border-b border-slate-200">
+                                            </button> 
                                             <button
                                             className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                                             type="button">
@@ -209,32 +228,31 @@ export default function clientOpportunitiesTable() {
                                     </tr>
                                 )
                             })}
-                        </tbody>
+                        </tbody>                        
                     </table>
-                    </div>
-                    <div className="flex items-center justify-between p-3">
-                        <p className="block text-sm text-slate-500">
-                        Page 1 of 10
-                        </p>
-                        <div className="flex gap-1">
-                            <button
-                                className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                                type="button">
-                                Previous
-                            </button>
-                            <button
-                                className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                                type="button">
-                                Next
-                            </button>
-                        </div>
+                </div>
+                <div className="flex items-center justify-between p-3">
+                    <p className="block text-sm text-slate-500">
+                        Page {currentPage} of {totalPages}
+                    </p>
+                    <div className="flex gap-1">
+                        <button
+                        className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        type="button"
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1 || viewAll}>
+                            Previous
+                        </button>
+                        <button
+                        className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        type="button"
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages || viewAll}>
+                            Next
+                        </button>
                     </div>
                 </div>
-                
-         
-        
-        
-        
+            </div>        
         </div>
     );
 }
