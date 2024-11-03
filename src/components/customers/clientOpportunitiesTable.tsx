@@ -1,13 +1,25 @@
+// hook import
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query'
-import { opportunity } from '../../utils/types'
-import { format, differenceInMonths } from 'date-fns'
 
+// tanstack/react-query import
+import { useQuery } from '@tanstack/react-query'
+
+// type imports
+import { opportunity } from '../../utils/types'
+
+// function imports
+import { formatDate, handleViewAllButtonClickTS, handleSort, sortArray, paginateArray, getPages, handlePreviousPage, handleNextPage } from '../../utils/functions';
+import { differenceInMonths } from 'date-fns';
+
+// props definition
 interface ClientOpportunitiesTableProps {
-    customerId: string;
+    customerNIT: string;
+    onSelectOpportunity: (opportunity: opportunity) => void;
 }
 
-const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ customerId }) => {
+// component definition
+const ClientOpportunitiesTable = ({ customerNIT, onSelectOpportunity }: ClientOpportunitiesTableProps) => {
+    // fetch hook implementation
     const { data: opportunities, error, isLoading } = useQuery<opportunity[], Error>({
         queryKey: ['opportunities'],
         queryFn: async () => {
@@ -17,83 +29,45 @@ const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ cus
         }
     });
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [viewAll, setViewAll] = useState(false);
-
+    // hook implementation
+    const [currentTablePage, setcurrentTablePage] = useState(1);
+    const [rowsPerTablePage, setRowsPerTablePage] = useState(5);
+    const [viewAllButton, setViewAllButton] = useState(false);
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
 
+    // conditional rendering
     if (isLoading) return <div>Loading content, please be patient...</div>
     if (error) return <div>An error occurred while fetching the information. Contact technical support and show them this code: {error.message}.</div>
 
-    const formatDate = (date: Date | string) => {
-        const parsedDate = new Date(date);
-        if (isNaN(parsedDate.getTime())) {
-            // Manejo de fecha inválida
-            return 'Fecha inválida';
-        }
-        return format(parsedDate, 'dd/MM/yyyy');
+    // button view all / view less void implementation
+    const handleViewAllButtonClick = (
+        clientOpportunities: opportunity[], 
+        viewAllButton: boolean, 
+        setRowsPerTablePage: React.Dispatch<React.SetStateAction<number>>, 
+        setcurrentTablePage: React.Dispatch<React.SetStateAction<number>>, 
+        setViewAllButton: React.Dispatch<React.SetStateAction<boolean>>
+    ) => {
+        handleViewAllButtonClickTS(clientOpportunities, viewAllButton, setRowsPerTablePage, setcurrentTablePage, setViewAllButton);
     };
 
-    const handleViewAllClick = () => {
-        if (viewAll) {
-            setRowsPerPage(5);
-        } else {
-            setRowsPerPage(opportunitiesClient.length);
-            setCurrentPage(1);
-        }
-        setViewAll(!viewAll);
-    };
+    // sortedOpportunities will be default array if sortConfig is null, otherwise it will be sorted by the key and direction in sortConfig calling sortArray function
+    const sortedOpportunities = sortArray(opportunities || [], sortConfig);
 
-    const handleSort = (key: string) => {
-        let direction: 'asc' | 'desc' = 'asc';
-        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-            direction = 'desc';
-        }
-        setSortConfig({ key, direction });
-    };
-
-    const sortedOpportunities = [...opportunities].sort((a: opportunity, b: opportunity) => {
-        if (sortConfig !== null) {
-            const aValue = a[sortConfig.key];
-            const bValue = b[sortConfig.key];
+    // this filters the sorted (or non-sorted) opportunities by customerNIT and asigns it to clientOpportunities
+    const clientOpportunities = sortedOpportunities.filter(opportunity => opportunity.nit === customerNIT);
     
-            if (typeof aValue === 'number' && typeof bValue === 'number') {
-                return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
-            } else {
-                const aString = String(aValue).toLowerCase();
-                const bString = String(bValue).toLowerCase();
-                if (aString < bString) {
-                    return sortConfig.direction === 'asc' ? -1 : 1;
-                }
-                if (aString > bString) {
-                    return sortConfig.direction === 'asc' ? 1 : -1;
-                }
-            }
-        }
-        return 0;
-    });
+    // since this array only contains opportunities for the selected customer, any of the opportunities can serve as a reference for the customer name
+    const customerName = clientOpportunities[0].client;
 
-    const opportunitiesClient = sortedOpportunities.filter(opportunity => opportunity.nit === customerId);
- 
-    const customerName = opportunitiesClient[0].client;
+    // totalPages is calculated by the getPages function
+    const totalPages = getPages(clientOpportunities, rowsPerTablePage);
 
-    const totalPages = Math.ceil((opportunitiesClient?.length || 0) / rowsPerPage);    
-    const currentRows = opportunitiesClient?.slice(
-        (currentPage - 1) * rowsPerPage, 
-        Math.min(currentPage * rowsPerPage, opportunities.length)
-    );
+    // currentRows is calculated by the paginateArray function
+    const currentRows = paginateArray(clientOpportunities, rowsPerTablePage, currentTablePage);
 
-    const handlePreviousPage = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
-    };
-
-    const handleNextPage = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-    };
-
+    // this is the return statement
     return (
-        <div className="mx-auto max-h-96">
+        <div className="mx-auto max-h-96 mb-32">
             <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
                 <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
                     <div className="flex items-center justify-between ">
@@ -104,8 +78,8 @@ const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ cus
                         <div className="flex flex-col gap-2 shrink-0 sm:flex-row">
                             <button
                             className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                            type="button" onClick={handleViewAllClick} disabled={opportunitiesClient.length <= rowsPerPage}>
-                                {viewAll ? 'View Less' : 'View All'}
+                            type="button" onClick={() => handleViewAllButtonClick(clientOpportunities, viewAllButton, setRowsPerTablePage, setcurrentTablePage, setViewAllButton)} disabled={clientOpportunities.length <= rowsPerTablePage && !viewAllButton}>
+                                {viewAllButton ? 'View Less' : 'View All'}
                             </button>
                             <button
                             className="flex select-none items-center gap-2 rounded bg-slate-800 py-2.5 px-4 text-xs font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
@@ -126,7 +100,7 @@ const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ cus
                         <thead className="sticky top-0 bg-white bg-opacity-100 z-10">
                             <tr>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48" onClick={() => handleSort('businessName')}>
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48" onClick={() => handleSort('businessName', sortConfig, setSortConfig)}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                         Task {sortConfig?.key === 'businessName' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
@@ -138,7 +112,7 @@ const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ cus
                                     </p>
                                 </th>                        
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48" onClick={() => handleSort('opportunityDescription')}>
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48" onClick={() => handleSort('opportunityDescription', sortConfig, setSortConfig)}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Description {sortConfig?.key === 'opportunityDescription' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
@@ -150,7 +124,7 @@ const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ cus
                                     </p>
                                 </th>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('status')}>
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('status', sortConfig, setSortConfig)}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Status {sortConfig?.key === 'status' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
@@ -162,7 +136,7 @@ const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ cus
                                     </p>
                                 </th>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('estimatedCompletionDate')}>
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('estimatedCompletionDate', sortConfig, setSortConfig)}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500 max-w-xs break-words">
                                     Estimated Closing Date {sortConfig?.key === 'estimatedCompletionDate' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
@@ -174,7 +148,7 @@ const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ cus
                                     </p>
                                 </th>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('estimatedValue')}>
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('estimatedValue', sortConfig, setSortConfig)}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Estimated Cost {sortConfig?.key === 'estimatedValue' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
@@ -191,7 +165,7 @@ const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ cus
                             </tr>
                         </thead>                        
                         <tbody>
-                            {currentRows?.filter(opportunity => opportunity.nit === customerId).map(opportunity => {
+                            {currentRows?.map(opportunity => {
                                 const estimatedCompletionDate = new Date(opportunity.estimatedCompletionDate)
                                 const currentDate = new Date()
                                 const monthsDifference = differenceInMonths(estimatedCompletionDate, currentDate)
@@ -235,9 +209,9 @@ const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ cus
                                             {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'COP' }).format(opportunity.estimatedValue)}
                                         </td>                                        
                                         <td className="p-4 border-b border-slate-200">
-                                        <button
+                                            <button
                                             className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                                            type="button">
+                                            type="button" key={opportunity.id} onClick={() => onSelectOpportunity(opportunity)}>
                                                 <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
                                                     className="w-4 h-4">
@@ -279,26 +253,26 @@ const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ cus
                 </div>
                 <div className="flex items-center justify-between p-3">
                     <p className="block text-sm text-slate-500">
-                        Page {currentPage} of {totalPages}
+                        Page {currentTablePage} of {totalPages}
                     </p>
                     <div className="flex gap-1">
                         <button
                         className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                         type="button"
-                        onClick={handlePreviousPage}
-                        disabled={currentPage === 1 || viewAll}>
+                        onClick={() => handlePreviousPage(currentTablePage, setcurrentTablePage)}
+                        disabled={currentTablePage === 1 || viewAllButton}>
                             Previous
                         </button>
                         <button
                         className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                         type="button"
-                        onClick={handleNextPage}
-                        disabled={currentPage === totalPages || viewAll}>
+                        onClick={() => handleNextPage(currentTablePage, setcurrentTablePage)}
+                        disabled={currentTablePage === totalPages || viewAllButton}>
                             Next
                         </button>
                     </div>
                 </div>
-            </div>        
+            </div>              
         </div>
     );
 }

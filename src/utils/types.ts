@@ -1,14 +1,24 @@
+export interface followUpSteps {
+    step: string;
+    task: string;
+    assignedTo: string;
+    deadline: string;
+    status: string;
+}
+
+
 export interface opportunity {
-    [key: string]: string | number | boolean;
     id: string;
     client: string;
     nit: string;
     businessName: string;
     businessLine: string;
     opportunityDescription: string;
+    opportunityLongDescription: string;
     estimatedValue: number;
     estimatedCompletionDate: string;
     status: string;
+    followUpSteps: followUpSteps[];
 }
 
 export interface customer {
