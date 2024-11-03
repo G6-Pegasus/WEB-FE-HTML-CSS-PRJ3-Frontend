@@ -2,6 +2,8 @@ import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { CustomerHook } from '../../hooks/useGetCustomers';
 import { Button } from "@mui/material";
+import axios from 'axios';
+import { CustomerRow } from "../../types/typesCustomers";
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -21,7 +23,7 @@ const columns: GridColDef[] = [
       <Button
         variant="contained"
         color="secondary"
-        onClick={() => handleUpdate(params.row.id)}
+        onClick={() => handleUpdate(params.row)}
         sx={{ background: '#40b09f' }}
         className={`w-[8rem]`}
       >
@@ -47,8 +49,15 @@ const columns: GridColDef[] = [
   },
 ];
 
-function handleUpdate(id: string) {
-  console.log(`Update client with ID: ${id}`);
+
+
+async function handleUpdate(row: CustomerRow) {
+  try {
+    const response = await axios.put(`https://web-fe-html-css-prj3-backend.onrender.com/customers/${row.id}`, row);
+    console.log('Update successful:', response.data);
+  } catch (error) {
+    console.error('Error updating customer:', error);
+  }
 }
 
 function handleToggleActive(id: string, isActive: boolean) {
