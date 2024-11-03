@@ -1,4 +1,5 @@
-export interface followUpSteps {
+export interface followUpStep {
+    id: string;
     step: string;
     task: string;
     assignedTo: string;
@@ -18,7 +19,7 @@ export interface opportunity {
     estimatedValue: number;
     estimatedCompletionDate: string;
     status: string;
-    followUpSteps: followUpSteps[];
+    followUpSteps: followUpStep[];
 }
 
 export interface customer {
