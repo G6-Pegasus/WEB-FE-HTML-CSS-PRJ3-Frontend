@@ -3,7 +3,11 @@ import { useQuery } from '@tanstack/react-query'
 import { opportunity } from '../../utils/types'
 import { format, differenceInMonths } from 'date-fns'
 
-export default function clientOpportunitiesTable() {
+interface ClientOpportunitiesTableProps {
+    customerId: string;
+}
+
+const ClientOpportunitiesTable: React.FC<ClientOpportunitiesTableProps> = ({ customerId }) => {
     const { data: opportunities, error, isLoading } = useQuery<opportunity[], Error>({
         queryKey: ['opportunities'],
         queryFn: async () => {
@@ -13,12 +17,23 @@ export default function clientOpportunitiesTable() {
         }
     });
 
-    if (isLoading) return <div>Loading content, please be patient...</div>
-    if (error) return <div>An error occurred while fetching the information. Contact technical support and show them this code: {error.message}.</div>
-
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [viewAll, setViewAll] = useState(false);
+
+    const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+
+    if (isLoading) return <div>Loading content, please be patient...</div>
+    if (error) return <div>An error occurred while fetching the information. Contact technical support and show them this code: {error.message}.</div>
+
+    const formatDate = (date: Date | string) => {
+        const parsedDate = new Date(date);
+        if (isNaN(parsedDate.getTime())) {
+            // Manejo de fecha inválida
+            return 'Fecha inválida';
+        }
+        return format(parsedDate, 'dd/MM/yyyy');
+    };
 
     const handleViewAllClick = () => {
         if (viewAll) {
@@ -29,8 +44,39 @@ export default function clientOpportunitiesTable() {
         }
         setViewAll(!viewAll);
     };
+
+    const handleSort = (key: string) => {
+        let direction: 'asc' | 'desc' = 'asc';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const sortedOpportunities = [...opportunities].sort((a: opportunity, b: opportunity) => {
+        if (sortConfig !== null) {
+            const aValue = a[sortConfig.key];
+            const bValue = b[sortConfig.key];
+    
+            if (typeof aValue === 'number' && typeof bValue === 'number') {
+                return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
+            } else {
+                const aString = String(aValue).toLowerCase();
+                const bString = String(bValue).toLowerCase();
+                if (aString < bString) {
+                    return sortConfig.direction === 'asc' ? -1 : 1;
+                }
+                if (aString > bString) {
+                    return sortConfig.direction === 'asc' ? 1 : -1;
+                }
+            }
+        }
+        return 0;
+    });
+
+    const opportunitiesClient = sortedOpportunities.filter(opportunity => opportunity.nit === customerId);
  
-    const opportunitiesClient = opportunities.filter(opportunity => opportunity.client === "Inversiones Globales S.A.");
+    const customerName = opportunitiesClient[0].client;
 
     const totalPages = Math.ceil((opportunitiesClient?.length || 0) / rowsPerPage);    
     const currentRows = opportunitiesClient?.slice(
@@ -53,12 +99,12 @@ export default function clientOpportunitiesTable() {
                     <div className="flex items-center justify-between ">
                         <div>
                             <h3 className="text-lg font-semibold text-slate-800">Opportunities for</h3>
-                            <p className="text-slate-500">[current client]</p>
+                            <p className="text-slate-500">{customerName}</p>
                         </div>
                         <div className="flex flex-col gap-2 shrink-0 sm:flex-row">
                             <button
                             className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                            type="button" onClick={handleViewAllClick}>
+                            type="button" onClick={handleViewAllClick} disabled={opportunitiesClient.length <= rowsPerPage}>
                                 {viewAll ? 'View Less' : 'View All'}
                             </button>
                             <button
@@ -80,10 +126,10 @@ export default function clientOpportunitiesTable() {
                         <thead className="sticky top-0 bg-white bg-opacity-100 z-10">
                             <tr>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48">
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48" onClick={() => handleSort('businessName')}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
-                                    Task
+                                        Task {sortConfig?.key === 'businessName' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -92,10 +138,10 @@ export default function clientOpportunitiesTable() {
                                     </p>
                                 </th>                        
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48">
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48" onClick={() => handleSort('opportunityDescription')}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
-                                    Description
+                                    Description {sortConfig?.key === 'opportunityDescription' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -104,10 +150,10 @@ export default function clientOpportunitiesTable() {
                                     </p>
                                 </th>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40">
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('status')}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
-                                    Status
+                                    Status {sortConfig?.key === 'status' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -116,10 +162,10 @@ export default function clientOpportunitiesTable() {
                                     </p>
                                 </th>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40">
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('estimatedCompletionDate')}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500 max-w-xs break-words">
-                                    Estimated Closing Date
+                                    Estimated Closing Date {sortConfig?.key === 'estimatedCompletionDate' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -128,10 +174,10 @@ export default function clientOpportunitiesTable() {
                                     </p>
                                 </th>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40">
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('estimatedValue')}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
-                                    Estimated Cost
+                                    Estimated Cost {sortConfig?.key === 'estimatedValue' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -145,7 +191,7 @@ export default function clientOpportunitiesTable() {
                             </tr>
                         </thead>                        
                         <tbody>
-                            {currentRows?.filter(opportunity => opportunity.client === "Inversiones Globales S.A.").map(opportunity => {
+                            {currentRows?.filter(opportunity => opportunity.nit === customerId).map(opportunity => {
                                 const estimatedCompletionDate = new Date(opportunity.estimatedCompletionDate)
                                 const currentDate = new Date()
                                 const monthsDifference = differenceInMonths(estimatedCompletionDate, currentDate)
@@ -172,7 +218,7 @@ export default function clientOpportunitiesTable() {
                                         </td>                                
                                         <td className="p-4 border-b border-slate-200 w-40 break-words">
                                             <div className={`border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${
-                                            opportunity.status === 'Executed' ? 'text-green-900 bg-green-500/20' :
+                                            opportunity.status === 'Approved' ? 'text-green-900 bg-green-500/20' :
                                             opportunity.status === 'Under Study' ? 'text-blue-900 bg-blue-500/20' :
                                             opportunity.status === 'Purchase Order' ? 'text-purple-900 bg-purple-500/20' :
                                             opportunity.status === 'Opening' ? 'text-yellow-900 bg-yellow-500/20' :
@@ -182,7 +228,7 @@ export default function clientOpportunitiesTable() {
                                         </td>
                                         <td className="p-4 border-b border-slate-200">                                        
                                             <div className={`border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${dateClass}`}>
-                                                {format(estimatedCompletionDate, 'dd/MM/yyyy')}
+                                                {formatDate(opportunity.estimatedCompletionDate)}
                                             </div>
                                         </td>
                                         <td className="p-4 border-b border-slate-200 text-right text-green-500 font-bold">
@@ -256,3 +302,5 @@ export default function clientOpportunitiesTable() {
         </div>
     );
 }
+
+export default ClientOpportunitiesTable;
