@@ -148,7 +148,7 @@ const CreateClient: React.FC = () => {
             <label className="text-sm font-medium mt-2"> Name</label>
             <input
               {...register(`contacts.${index}.Cname`, { required: 'The contact name is mandatory' })}
-              placeholder="Contact Name"
+              placeholder="Contact Name and Surname"
               className="mt-1 p-2 border rounded-md shadow-sm w-full"
             />
             {errors.contacts?.[index]?.Cname && <p className="text-red-500">{errors.contacts[index].Cname.message}</p>}
