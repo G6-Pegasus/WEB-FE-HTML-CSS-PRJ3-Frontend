@@ -7,8 +7,9 @@ export type ClientType = {
   city: string;
   country: string;
   phone: number;
-  cEmail: string;
-  contacts: Array<{ name: string; email: string; phone: string }>;
+  email: string;
+  isActive: boolean;
+  contacts: Array<{ cname: string; cemail: string; cphone: string }>;
 };
 
 export const addClient = async (client: ClientType) => {

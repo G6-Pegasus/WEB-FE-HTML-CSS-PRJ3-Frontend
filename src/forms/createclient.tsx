@@ -1,297 +1,204 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
 
 interface Contact {
-    name: string;
-    email: string;
-    phone: string;
+  Cname: string
+  Cemail: string
+  Cphone: string
 }
 
-const CreateClient : React.FC = () => {
-  const [name, setName] = useState('');
-  const [nit, setNit] = useState<number | ''>('');
-  const [direction, setDirection] = useState('');
-  const [city, setCity] = useState('');
-  const [country, setCountry] = useState('');
-  const [phone, setPhone] = useState<number | ''>('');
-  const [cEmail, setcEmail] = useState('');
-  const [isDirty, setIsDirty] = useState(false);
-  const [error, setError] = useState(false);
-  const [isAccepted, setIsAccepted] = useState(false);
-  const [numberError, setNumberError] = useState(false);
-  const [emailError, setEmailError] = useState(false);
-  const [contacts, setContacts] = useState<Contact[]>([{ name: '', email: '', phone: '' }]);
+interface FormValues {
+  name: string
+  nit: number
+  direction: string
+  city: string
+  country: string
+  phone: number
+  email: string
+  isActive: boolean
+  contacts: Contact[]
+}
 
-  const handleBlur = () => {
-    setIsDirty(true);
-    if (!name) {
-      setError(true);
-    } else {
-      setError(false);
+const countriesList = [
+  { code: 'AR', name: 'Argentina' },
+  { code: 'BR', name: 'Brazil' },
+  { code: 'CO', name: 'Colombia' },
+  { code: 'MX', name: 'Mexico' },
+  { code: 'US', name: 'United States' },
+  {code: 'CHN', name: 'China'},
+]
+
+const CreateClient: React.FC = () => {
+  const { register, handleSubmit, control, formState: { errors } } = useForm<FormValues>({
+    defaultValues: {
+      contacts: [{ Cname: '', Cemail: '', Cphone: '' }]
     }
-  };
+  });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'contacts',
+  });
 
-  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-    if (error && e.target.value) {
-      setError(false);
-    }
-  };
-
-  const handleChangeNit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === '' || !isNaN(Number(value))) {
-      setNit(value === '' ? '' : Number(value));
-      setNumberError(false);
-    } else {
-      setNumberError(true);
-    }
-  };
-
-  const handleChangeDirection = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDirection(e.target.value);
-    if (error && e.target.value) {
-      setError(false);
-    }
-  };
-
-  const handleChangeCity = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCity(e.target.value);
-    if (error && e.target.value) {
-      setError(false);
-    }
-  };
-
-  const handleChangeCountry = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCountry(e.target.value);
-    if (error && e.target.value) {
-      setError(false);
-    }
-  };
-
-  const handleChangePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === '' || !isNaN(Number(value))) {
-      setPhone(value === '' ? '' : Number(value));
-      setNumberError(false);
-    } else {
-      setNumberError(true);
-    }
-  };
-
-  const handleChangeCemail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setcEmail(value);
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@(a\.com|a\.edu\.co|a\.org\.co|dominio\.co)$/;
-    if (emailRegex.test(value) || value === '') {
-      setEmailError(false);
-    } else {
-      setEmailError(true);
-    }
-  };
-
-  const handleCheckboxChange = () => {
-    setIsAccepted(!isAccepted);
-  };
-
-  const handleContactChange = (index: number, field: keyof Contact, value: string) => {
-    const newContacts = [...contacts];
-    newContacts[index][field] = value;
-    setContacts(newContacts);
-  };
-
-  const addContact = () => {
-
-    const lastContact = contacts[contacts.length - 1];
-    if (lastContact.name && lastContact.email && lastContact.phone) {
-      setContacts([...contacts, { name: '', email: '', phone: '' }]);
-    } else {
-      alert("Please complete all the fields of the previous contact before adding another one.");
-    }
-  };
-
-  const removeContact = (index: number) => {
-    if (index === 0) {
-      alert("The first contact is mandatory and cannot be removed.")
-      return
-    }
-    const newContacts = contacts.filter((_, i) => i !== index)
-    setContacts(newContacts)
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`Name submitted: ${name}, Nit submitted: ${nit}, Direction submitted: ${direction}, City submitted: ${city}, Country submitted: ${country}, Phone submitted: ${phone}, Corporate email submitted: ${cEmail}, Is Active: ${isAccepted}, contact info: ${contacts}`);
+  const onSubmit = (data: FormValues) => {
+    alert(`Name submitted: ${data.name}, Nit submitted: ${data.nit}, Direction submitted: ${data.direction}, City submitted: ${data.city}, Country submitted: ${data.country}, Phone submitted: ${data.phone}, Corporate email submitted: ${data.email}, Is Active: ${data.isActive}, Contacts: ${JSON.stringify(data.contacts)}`);
   };
 
   return (
     <div className='m-2'>
-      <form className="flex flex-col mb-4 w-full max-w-xs mx-auto" onSubmit={handleSubmit}>
+      <form className="flex flex-col mb-4 w-full max-w-lg mx-auto" onSubmit={handleSubmit(onSubmit)}>
         <h1 className='font-bold text-2xl'>Create Client</h1>
 
-        <label className={`text-sm font-medium ${error ? 'text-red-500' : 'text-gray-700'}`}>
-          Name {error ? '*' : ''}
-        </label>
-        <input
-          type="text"
-          value={name}
-          onChange={handleChangeName}
-          onBlur={handleBlur}
-          placeholder="Name of the company"
-          className={`mt-1 p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 ${
-            error ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-500'
-          } w-full`}
-          required
-        />
-        {error && isDirty && <p className="text-red-500 text-xs mt-1">This field is required.</p>}
+        <div className="flex flex-col md:flex-row md:space-x-4">
+          <div className="flex-1">
+            <label className="text-sm font-medium mt-2">Client Name</label>
+            <input
+              {...register('name', { required: 'This field is mandatory' })}
+              placeholder="Company Name"
+              className="mt-1 p-2 border rounded-md shadow-sm w-full"
+            />
+            {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+          </div>
+          <div className="flex-1">
+            <label className="text-sm font-medium mt-2">NIT</label>
+            <input
+              type="number"
+              {...register("nit", { required: "The NIT is mandatory" })}
+              className="mt-1 p-2 border rounded-md shadow-sm w-full"
+            />
+            {errors.nit && <p className="text-red-500">{errors.nit.message}</p>}
+          </div>
+        </div>
 
-        <label className="text-sm font-medium text-gray-700 mt-4">Nit</label>
-        <input
-          value={nit}
-          onChange={handleChangeNit}
-          placeholder="Enter the Nit"
-          className={`mt-1 p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-500 w-full ${
-            numberError ? 'border-red-500' : ''
-          }`}
-          required
-        />
-        {numberError && <p className="text-red-500 text-xs mt-1">Only numbers are allowed.</p>}
+        <div className="flex flex-col md:flex-row md:space-x-4 mt-4">
+          <div className="flex-1">
+            <label className="text-sm font-medium mt-2">Direction</label>
+            <input
+              placeholder="Company direction"
+              {...register("direction", { required: "The direction is mandatory" })}
+              className="mt-1 p-2 border rounded-md shadow-sm w-full"
+            />
+            {errors.direction && <p className="text-red-500">{errors.direction.message}</p>}
+          </div>
+          <div className="flex-1">
+            <label className="text-sm font-medium mt-2">City</label>
+            <input
+              {...register("city", { required: "The city is mandatory" })}
+              className="mt-1 p-2 border rounded-md shadow-sm w-full"
+            />
+            {errors.city && <p className="text-red-500">{errors.city.message}</p>}
+          </div>
+        </div>
 
-        <label className={`text-sm font-medium ${error ? 'text-red-500' : 'text-gray-700'}`}>
-          Direction {error ? '*' : ''}
-        </label>
-        <input
-          type="text"
-          value={direction}
-          onChange={handleChangeDirection}
-          onBlur={handleBlur}
-          placeholder="Direction of the company"
-          className={`mt-1 p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 ${
-            error ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-500'
-          } w-full`}
-          required
-        />
-        {error && isDirty && <p className="text-red-500 text-xs mt-1">This field is required.</p>}
+        <div className="flex flex-col md:flex-row md:space-x-4 mt-4">
+          <div className="flex-1">
+          <label className="text-sm font-medium mt-2">Country</label>
+          <select
+            {...register("country", { required: "The country is mandatory" })}
+            className="mt-1 p-2 border rounded-md shadow-sm w-full"
+          >
+            <option value="">Select a country</option> 
+            {countriesList.map((country) => (
+              <option key={country.code} value={country.code}>
+                {country.name}
+              </option>
+            ))}
+          </select>
+          {errors.country && <p className="text-red-500">{errors.country.message}</p>}
+          </div>
 
-        <label className={`text-sm font-medium mt-4 ${error ? 'text-red-500' : 'text-gray-700'}`}>
-          City {error ? '*' : ''}
-        </label>
-        <input
-          type="text"
-          value={city}
-          onChange={handleChangeCity}
-          onBlur={handleBlur}
-          placeholder="City where is located"
-          className={`mt-1 p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 ${
-            error ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-500'
-          } w-full`}
-          required
-        />
-        {error && isDirty && <p className="text-red-500 text-xs mt-1">This field is required.</p>}
+          <div className="flex-1">
+            <label className="text-sm font-medium mt-2">Email</label>
+            <input
+              {...register("email", { required: "The email is mandatory",
+                validate: value => {
+                  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                  return regex.test(value) || "The email is not valid";
+                } })}
+              className="mt-1 p-2 border rounded-md shadow-sm w-full"
+              placeholder="Enter the company email"
+            />
+            {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+          </div>
+        </div>
 
-        <label className={`text-sm font-medium mt-4 ${error ? 'text-red-500' : 'text-gray-700'}`}>
-          Country {error ? '*' : ''}
-        </label>
-        <input
-          type="text"
-          value={country}
-          onChange={handleChangeCountry}
-          onBlur={handleBlur}
-          placeholder="Country of the company"
-          className={`mt-1 p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 ${
-            error ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-500'
-          } w-full`}
-          required
-        />
-        {error && isDirty && <p className="text-red-500 text-xs mt-1">This field is required.</p>}
+        <div className="flex-1 mt-4">
+          <label className="text-sm font-medium mt-2">Phone</label>
+          <input
+            type="number"
+            placeholder="Company phone"
+            {...register("phone", { required: "The phone is mandatory" })}
+            className="mt-1 p-2 border rounded-md shadow-sm w-full"
+          />
+          {errors.phone && <p className="text-red-500">{errors.phone.message}</p>}
+        </div>
 
-        <label className={`text-sm font-medium ${emailError ? 'text-red-500' : 'text-gray-700'} mt-4`}>
-          Email {emailError ? '*' : ''}
-        </label>
-        <input
-          type="text"
-          value={cEmail}
-          onChange={handleChangeCemail}
-          onBlur={() => setIsDirty(true)}
-          placeholder="Enter the Corporate Email"
-          className={`mt-1 p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-500 w-full ${
-            emailError ? 'border-red-500' : ''
-          }`}
-          required
-        />
-        {emailError && <p className="text-red-500 text-xs mt-1">Email must be from a valid domain.</p>}
-
-        <label className="text-sm font-medium text-gray-700 mt-4">Phone</label>
-        <input
-          value={phone}
-          onChange={handleChangePhone}
-          placeholder="Phone of the company"
-          className={`mt-1 p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-500 w-full ${
-            numberError ? 'border-red-500' : ''
-          }`}
-          required
-        />
-        {numberError && <p className="text-red-500 text-xs mt-1">Only numbers are allowed.</p>}
-        
         <div className="flex items-center mt-4">
           <input
             type="checkbox"
+            {...register("isActive")}
             className="mr-2"
-            checked={isAccepted}
-            onChange={handleCheckboxChange}
           />
           <label className="text-sm text-gray-700">Is Active</label>
         </div>
 
-        <h1 className='font-bold text-2xl mt-4'>Contact info</h1>
-
-        {contacts.map((contact, index) => (
-          <div key={index} className="mt-4">
+        <h1 className='font-bold text-2xl mt-4'>Add Contact</h1>
+        {fields.map((contact, index) => (
+          <div key={contact.id} className="mt-4">
             <h2 className='font-bold'>{index + 1}° Contact</h2>
-            <label className="text-sm font-medium mt-2">Contact Name</label>
+            <label className="text-sm font-medium mt-2"> Name</label>
             <input
-              type="text"
-              value={contact.name}
-              onChange={(e) => handleContactChange(index, 'name', e.target.value)}
-              placeholder="Name and Surname"
+              {...register(`contacts.${index}.Cname`, { required: 'The contact name is mandatory' })}
+              placeholder="Contact Name"
               className="mt-1 p-2 border rounded-md shadow-sm w-full"
-              required
             />
-            <label className="text-sm font-medium mt-2">Email</label>
+            {errors.contacts?.[index]?.Cname && <p className="text-red-500">{errors.contacts[index].Cname.message}</p>}
+
+            <label className="text-sm font-medium mt-2"> Email</label>
             <input
-              type="email"
-              value={contact.email}
-              onChange={(e) => handleContactChange(index, 'email', e.target.value)}
+              {...register(`contacts.${index}.Cemail`, { 
+                required: "The email is mandatory",
+                validate: value => {
+                  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+                  return regex.test(value) || "The email is not valid"
+                }
+              })}
               placeholder="Contact Email"
-              className="mt-1 p-2 border rounded-md shadow-sm w-full"
-              required
+              className={`mt-1 p-2 border rounded-md shadow-sm w-full ${errors.contacts?.[index]?.Cemail ? 'border-red-500' : ''}`}
             />
-            <label className="text-sm font-medium mt-2">Phone</label>
+            {errors.contacts?.[index]?.Cemail && (
+              <p className="text-red-500">{errors.contacts[index].Cemail.message}</p>
+            )}
+
+            <label className="text-sm font-medium mt-2"> Phone</label>
             <input
-              type="tel"
-              value={contact.phone}
-              onChange={(e) => handleContactChange(index, 'phone', e.target.value)}
-              placeholder="Contact Phone"
+              type="number"
+              {...register(`contacts.${index}.Cphone`, { required: 'The phone is mandatory' })}
+              placeholder="Contact phone"
               className="mt-1 p-2 border rounded-md shadow-sm w-full"
-              required
             />
-            {index !== 0 && (
-              <button type="button" onClick={() => removeContact(index)} className="mt-2 p-2 bg-red-500 text-white rounded-md">
-                Eliminar Contacto
+            {errors.contacts?.[index]?.Cphone && <p className="text-red-500">{errors.contacts[index].Cphone.message}</p>}
+
+            {fields.length > 1 && (
+              <button type="button" onClick={() => remove(index)} className="mt-2 p-2 bg-red-500 text-white rounded-md">
+                Delete Contact
               </button>
             )}
           </div>
         ))}
-        
-        <button type="button" onClick={addContact} className="mt-4 p-2 bg-blue-500 text-white rounded-md">
-          Añadir otro contacto
+        {fields.length === 0 && <p className="text-red-500">You must add at least one contact.</p>}
+        <button
+          type="button"
+          onClick={() => append({ Cname: '', Cemail: '', Cphone: '' })}
+          className="mt-4 p-2 bg-blue-500 text-white rounded-md"
+        >
+          + Add other contact
         </button>
-
-        <button type="submit" className="mt-6 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors">
-          Create Client
+        <button type="submit" className="mt-4 p-2 bg-green-500 text-white rounded-md">
+          Send
         </button>
       </form>
     </div>
-  );
-};
+  )
+}
 
 export default CreateClient;
