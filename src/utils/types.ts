@@ -19,11 +19,10 @@ export interface opportunity {
     estimatedValue: number;
     estimatedCompletionDate: string;
     status: string;
-    followUpSteps: followUpStep[];
 }
 
-export interface customer {
-    [key: string]: string | number | boolean;
+export interface client {
+    id: number;
     nit: string;
     name: string;
     address: string;
