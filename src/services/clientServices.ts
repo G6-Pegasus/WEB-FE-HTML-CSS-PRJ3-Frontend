@@ -13,7 +13,7 @@ export type ClientType = {
 };
 
 export const addClient = async (client: ClientType) => {
-  return await fetcher('/api/clients', {
+  return await fetcher('/customers', {
     method: 'POST',
     body: JSON.stringify(client),
   });

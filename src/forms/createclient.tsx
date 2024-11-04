@@ -1,5 +1,6 @@
 import React from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
+import { useCreateClient } from '../hooks/useCreateClient';
 
 interface Contact {
   Cname: string
@@ -20,29 +21,38 @@ interface FormValues {
 }
 
 const countriesList = [
-  { code: 'AR', name: 'Argentina' },
-  { code: 'BR', name: 'Brazil' },
-  { code: 'CO', name: 'Colombia' },
-  { code: 'MX', name: 'Mexico' },
-  { code: 'US', name: 'United States' },
+  {code: 'AR', name: 'Argentina' },
+  {code: 'BR', name: 'Brazil' },
+  {code: 'CO', name: 'Colombia' },
+  {code: 'MX', name: 'Mexico' },
+  {code: 'US', name: 'United States' },
   {code: 'CHN', name: 'China'},
 ]
 
 const CreateClient: React.FC = () => {
+  const { mutate: createClient, isSuccess, isError } = useCreateClient()
   const { register, handleSubmit, control, formState: { errors } } = useForm<FormValues>({
     defaultValues: {
       contacts: [{ Cname: '', Cemail: '', Cphone: '' }]
     }
-  });
+  })
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'contacts',
-  });
+  })
 
   const onSubmit = (data: FormValues) => {
-    alert(`Name submitted: ${data.name}, Nit submitted: ${data.nit}, Direction submitted: ${data.direction}, City submitted: ${data.city}, Country submitted: ${data.country}, Phone submitted: ${data.phone}, Corporate email submitted: ${data.email}, Is Active: ${data.isActive}, Contacts: ${JSON.stringify(data.contacts)}`);
-  };
-
+    const clientData = {
+      ...data,
+      contacts: data.contacts.map(contact => ({
+        cname: contact.Cname,
+        cemail: contact.Cemail,
+        cphone: contact.Cphone,
+      })),
+    }
+    createClient(clientData)
+  }
+  
   return (
     <div className='m-2'>
       <form className="flex flex-col mb-4 w-full max-w-lg mx-auto" onSubmit={handleSubmit(onSubmit)}>
@@ -197,6 +207,8 @@ const CreateClient: React.FC = () => {
           Send
         </button>
       </form>
+      {isSuccess && <p className="text-green-500">Client created successfully!</p>}
+      {isError && <p className="text-red-500">Error creating client. Please try again.</p>}
     </div>
   )
 }
