@@ -1,15 +1,20 @@
-import CustomersView from "../customers/CustomersView";
+import { useNavigate } from 'react-router-dom';
 
 const DashboardView = () => {
-    return <>
-        <div>
-            <h1>Dashboard</h1>
-            <p>Welcome to the dashboard. Here you can find a summary of the most important information.</p>
-        </div>
-        <div>        
-            <CustomersView />
-        </div>
-    </>
-}
+    const navigate = useNavigate()
 
-export default DashboardView
+    const handleClick = () => {
+        navigate('/createCustomer')
+    }
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <button className="px-6 py-3 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+        onClick={handleClick}>
+          Ir
+        </button>
+      </div>
+    );
+  };
+  
+  export default DashboardView;
+  
