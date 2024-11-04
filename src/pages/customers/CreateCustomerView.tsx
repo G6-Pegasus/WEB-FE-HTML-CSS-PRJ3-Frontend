@@ -1,5 +1,10 @@
-const CreateCustomerView = () => {
-    return <div>CreateCustomerView</div>
-}
+import CreateClient from "../../forms/createclient"; 
 
-export default CreateCustomerView
+const CreateCustomerView = () => {
+    return (
+        <>
+            <CreateClient /> 
+        </>
+    )
+}
+export default CreateCustomerView;
