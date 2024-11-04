@@ -10,7 +10,6 @@ import DashboardView from "./pages/dashboard/DashboardView";
 import OpportunitiesView from "./pages/opportunities/OpportunitiesView";
 import OpportunityDetailsView from "./pages/opportunities/OpportunityDetailsView";
 import FollowUpsView from "./pages/followUps/FollowUpsView";
-import Client_Opportunities_Table from "./components/customers/clientOpportunitiesTable";
 import ClientOpportunitiesTable from "./components/customers/clientOpportunitiesTable";
 import ClientDetail from "./components/customers/ClientDetail"
 
@@ -55,7 +54,7 @@ const router = createBrowserRouter([
 export default function App() {
     return (
         <><ClientDetail />
-        <Client_Opportunities_Table /></>
+        <ClientOpportunitiesTable /></>
 
     //   <Router>
     //     <Routes>
@@ -65,3 +64,5 @@ export default function App() {
     //   </Router>
     );
   }
+  return <RouterProvider router={router} />
+}

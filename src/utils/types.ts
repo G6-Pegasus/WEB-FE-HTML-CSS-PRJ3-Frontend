@@ -1,9 +1,21 @@
+export interface followUpStep {
+    id: string;
+    step: string;
+    task: string;
+    assignedTo: string;
+    deadline: string;
+    status: string;
+}
+
+
 export interface opportunity {
     id: string;
     client: string;
+    nit: string;
     businessName: string;
     businessLine: string;
     opportunityDescription: string;
+    opportunityLongDescription: string;
     estimatedValue: number;
     estimatedCompletionDate: string;
     status: string;
@@ -15,9 +27,8 @@ export interface client {
     name: string;
     address: string;
     city: string;
-    country: string; 
+    country: string;
     phone: string;
-    email: string;
-    active :boolean ;
-
+    corporateEmail: string;
+    status: string;
 }
