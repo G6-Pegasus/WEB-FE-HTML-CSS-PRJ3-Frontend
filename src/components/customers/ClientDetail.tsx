@@ -3,14 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 import { client } from '../../utils/types';
 
 export default function ClientDetail() {
-    //const { clientId } = useParams<{ clientId: string }>();
-    const clientId = "2"
-    if (!clientId) return <div>No client ID provided in the URL.</div>;
+    //const { customerId } = useParams<{ customerId: string }>();
+    const customerId = "1"
+    if (!customerId) return <div>No client ID provided in the URL.</div>;
 
     const { data: client, error, isLoading } = useQuery<client, Error>({
-        queryKey: ['client', clientId],
+        queryKey: ['client', customerId],
         queryFn: async () => {
-            const response = await fetch(`http://localhost:3001/customers/${clientId}`);
+            //https://web-fe-html-css-prj3-backend.onrender.com/customers${customerId}
+            const response = await fetch(`http://localhost:3001/customers/${customerId}`);
             if (!response.ok) throw new Error('An error occurred while fetching client information.');
             return response.json() as Promise<client>;
         }

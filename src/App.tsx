@@ -60,7 +60,7 @@ export default function App() {
     //   <Router>
     //     <Routes>
     //       <Route path="/" element={<Client_Opportunities_Table />} />
-    //       <Route path="/client/:clientId" element={<ClientDetail />} />
+    //       <Route path="/client/:customerId" element={<ClientDetail />} />
     //     </Routes>
     //   </Router>
     );
