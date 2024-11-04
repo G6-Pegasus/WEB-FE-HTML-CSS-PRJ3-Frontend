@@ -45,10 +45,10 @@ export default function clientOpportunitiesTable() {
     const handleNextPage = () => {
         if (currentPage < totalPages) setCurrentPage(currentPage + 1);
     };
-
+//rounded-xl
     return (
         <div className="mx-auto max-h-96">
-            <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
+            <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md  bg-clip-border">
                 <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
                     <div className="flex items-center justify-between ">
                         <div>

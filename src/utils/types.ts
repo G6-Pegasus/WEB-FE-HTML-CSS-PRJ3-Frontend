@@ -8,3 +8,16 @@ export interface opportunity {
     estimatedCompletionDate: string;
     status: string;
 }
+
+export interface client {
+    id: number;
+    nit: string;
+    name: string;
+    address: string;
+    city: string;
+    country: string; 
+    phone: string;
+    email: string;
+    active :boolean ;
+
+}
