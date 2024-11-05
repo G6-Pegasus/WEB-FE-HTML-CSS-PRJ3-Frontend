@@ -2,6 +2,7 @@ import React from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useCreateCustomer } from '../hooks/useCreateCustomer';
 import { Customer } from '../utils/types';
+import Swal from 'sweetalert2'
 
 const countriesList = [
   {code: 'AR', name: 'Argentina' },
@@ -16,11 +17,19 @@ const CreateClient: React.FC = () => {
   const { mutate: createCustomer, isSuccess, isError } = useCreateCustomer()
   const { register, handleSubmit, control, formState: { errors } } = useForm<Customer>()
   const { fields, append, remove } = useFieldArray({ control, name: 'contacts' })
-  const onSubmit = (customer: Customer) => createCustomer({ ...customer, id: crypto.randomUUID() })
+  const onSubmit = (customer: Customer) => {
+      createCustomer({ ...customer, id: crypto.randomUUID() })
+      if(isSuccess) Swal.fire("Updated!", "", "success");
+      if (isError) Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Error creating customer"
+      });
+  }
   
   return (
     <div className='m-2'>
-      <form className="flex flex-col mb-4 w-full max-w-lg mx-auto" onSubmit={handleSubmit(onSubmit)}>
+      <form className="flex flex-col mb-4 w-full max-w-2xl mx-auto" onSubmit={handleSubmit(onSubmit)}>
         <h1 className='font-bold text-2xl'>Create Client</h1>
 
         <div className="flex flex-col md:flex-row md:space-x-4">

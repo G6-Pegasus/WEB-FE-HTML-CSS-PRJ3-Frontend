@@ -45,13 +45,12 @@ const ClientOpportunitiesTable = ({ customer, onSelectOpportunity }: ClientOppor
 
     // this is the return statement
     return (
-        <div className="mx-auto max-h-96">
+        <div className="w-full max-h-80">
             <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
                 <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
                     <div className="flex items-center justify-between ">
                         <div>
-                            <h3 className="text-lg font-semibold text-slate-800">Opportunities for</h3>
-                            <p className="text-slate-500">{customer.name}</p>
+                            <h3 className="text-lg font-semibold text-slate-800">Opportunities</h3>
                         </div>
                         <div className="flex flex-col gap-2 shrink-0 sm:flex-row">
                             <button

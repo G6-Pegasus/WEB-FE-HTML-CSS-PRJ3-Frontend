@@ -4,26 +4,13 @@ import { DataGrid, GridColDef, GridRowModel } from '@mui/x-data-grid';
 import { useGetCustomers } from '../../hooks/useGetCustomers';
 import { Button } from "@mui/material";
 import { Customer, CustomerRow } from "../../utils/types";
-import { updateCustomer } from '../../services/customerServices';
+import { useUpdateCustomer } from '../../hooks/useUpdateCustomer'
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2'
 
-async function handleUpdate(row: CustomerRow) {
-    try {
-        await updateCustomer(row);
-        Swal.fire("Updated!", "", "success");
-        return true;
-    } catch (error: any) {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: error.message
-        });
-    }
-}
-
 function ClientTable() {
   const { data: rows = [], isLoading, isError } = useGetCustomers();
+  const { mutate: updateCustomer, isSuccess, isError: isUpdateError } = useUpdateCustomer();
   const [dataRows, setDataRows] = useState<Customer[]>(rows)
   const navigate = useNavigate();
 
@@ -31,14 +18,31 @@ function ClientTable() {
     setDataRows(rows)
   }, [rows])
 
+  function handleUpdate(row: CustomerRow) {
+    updateCustomer(row);
+    if (isSuccess) Swal.fire("Updated!", "", "success");
+    if (isUpdateError) Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something is wrong"
+    });
+  }
+
   async function handleToggleActive (customerRow: CustomerRow, isActive: boolean) {
-    const result = await handleUpdate({ ...customerRow, active: !isActive });
-    if (!result) return;
-    setDataRows((prevRows: Customer[]) =>
-      prevRows.map((row) =>
-        row.id === customerRow.id ? { ...row, active: !row.active } : row
-      )
-    );
+    updateCustomer({ ...customerRow, active: !isActive });
+    if (isSuccess) {
+      Swal.fire("Updated!", "", "success");
+      setDataRows((prevRows: Customer[]) =>
+        prevRows.map((row) =>
+          row.id === customerRow.id ? { ...row, active: !row.active } : row
+        )
+      );
+    }
+    if (isUpdateError) Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something is wrong"
+    });
   };
 
   const columns: GridColDef[] = [
@@ -109,7 +113,7 @@ function ClientTable() {
   return (
     <Box sx={{
       width: '100%', // Ajuste del ancho en Material-UI
-      height: '100%', // Ocupa la altura completa del contenedor padre
+      height: '80%', // Ocupa la altura completa del contenedor padre
     }}
     className="overflow-auto">
       <DataGrid

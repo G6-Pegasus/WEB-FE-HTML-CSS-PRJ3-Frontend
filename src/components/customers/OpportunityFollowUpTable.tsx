@@ -37,15 +37,11 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
     };
     
     const sortedOpportunityFollowUpSteps = sortArray(opportunityFollowUps || [], sortConfig);
-
-    // totalPages is calculated by the getPages function
     const totalPages = getPages(sortedOpportunityFollowUpSteps, rowsPerTablePage);
-
-    // currentRows is calculated by the paginateArray function
     const currentRows = paginateArray(sortedOpportunityFollowUpSteps, rowsPerTablePage, currentTablePage);
     
     return (
-        <div className="mx-auto max-h-96 mb-32">
+        <div className="w-full max-h-96 mt-44">
             <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
                 <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
                     <div className="flex items-center justify-between ">

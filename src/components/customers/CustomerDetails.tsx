@@ -2,9 +2,9 @@ import { Customer } from '../../utils/types';
 
 export default function ClientDetail({ customer } : { customer: Customer }) {
     return (
-        <div className="mx-auto p-6 w-full bg-white  shadow-md  border-gray-200 ">
+        <div className="w-full p-6 bg-white shadow-md border-gray-200 rounded-xl">
             <h2 className="text-xl font-semibold text-slate-800 mb-4 border-b border-gray-300  ">
-                Your Details
+                Customer Details
             </h2>
             <div className="text-slate-700 grid grid-cols-2 gap-x-6 gap-y-2">
                 <p className="mb-2"><strong>NIT:</strong> {customer.nit}</p>
