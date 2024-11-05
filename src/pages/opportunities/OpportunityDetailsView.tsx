@@ -1,5 +1,7 @@
+import Main from '../../layout/Main'
+
 const OpportunityDetailsView = () => {
-    return <div>OpportunityDetailsView</div>
+    return <Main>OpportunityDetailsView</Main>
 }
 
 export default OpportunityDetailsView

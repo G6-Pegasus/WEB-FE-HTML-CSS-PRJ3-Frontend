@@ -18,13 +18,11 @@ const CustomerDetailsView = () => {
     if (!customer) return <div>Customer not found.</div>;
     
     return <Main>
-        <h1>Customer Details</h1>
-        <h2>Top section</h2>
-        <CustomerDetails customer={customer} />
-        <h2>Middle section</h2>
-        <CustomerOpportunitiesTable customer={customer} onSelectOpportunity={setSelectedOpportunity} />
-        <h2>Bottom section</h2>
-        {selectedOpportunity && <OpportunityFollowUpTable opportunity={selectedOpportunity} />}
+        <section className="flex flex-col gap-5">
+            <CustomerDetails customer={customer} />
+            <CustomerOpportunitiesTable customer={customer} onSelectOpportunity={setSelectedOpportunity} />
+            {selectedOpportunity && <OpportunityFollowUpTable opportunity={selectedOpportunity} />}
+        </section>
     </Main>;
 }
 
