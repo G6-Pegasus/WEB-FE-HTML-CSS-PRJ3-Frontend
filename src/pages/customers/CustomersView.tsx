@@ -1,27 +1,24 @@
-import { useQuery } from '@tanstack/react-query'
-import { customer } from '../../utils/types'
-import CustomerDetailsView from './CustomerDetailsView';
+import ListCustomers from '../../components/customers/ListCustomers'
+import { Link } from 'react-router-dom';
+import Main from '../../layout/Main'
 
 const CustomersView = () => {
-    const { data: customers, error, isLoading } = useQuery<customer[], Error>({
-        queryKey: ['opportunities'],
-        queryFn: async () => {
-          const response = await fetch('http://localhost:3001/customers')
-          if (!response.ok) throw new Error('An error occurred while fetching the information. The server has rejected the connection.')
-          return response.json() as Promise<customer[]>
-        }
-    });
-
-    if (isLoading) return <div>Loading content, please be patient...</div>
-    if (error) return <div>An error occurred while fetching the information. Contact technical support and show them this code: {error.message}.</div>
-
-    return <>
-        <h1>Customers</h1>
-        <p>
-            This is the list of customers. Click on the name of the customer to see more details.
-        </p>
-        <CustomerDetailsView />
-    </>;
+    return <Main>
+        <section className='flex flex-row justify-center'>
+            <section className='w-[80vw] h-[80vh] flex gap-5 mt-5 flex-col justify-center items-center'>
+                <div className='w-full flex flex-row justify-between items-center'>
+                    <h3 className='text-lg font-bold'>Customer List</h3>
+                    <Link
+                        to={"/createCustomer"}
+                        className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+                    >
+                        Add Customer
+                    </Link>
+                </div>
+                <ListCustomers />
+            </section>
+        </section>
+    </Main>
 }
 
 export default CustomersView

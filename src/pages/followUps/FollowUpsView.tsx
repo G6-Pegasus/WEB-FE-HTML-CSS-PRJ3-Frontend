@@ -1,5 +1,7 @@
+import Main from '../../layout/Main'
+
 const FollowUpsView = () => {
-    return <div>FollowUpsView</div>
+    return <Main>FollowUpsView</Main>
 }
 
 export default FollowUpsView

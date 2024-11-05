@@ -1,28 +1,29 @@
-// hook imports
 import { useParams } from "react-router-dom";
 import { useState } from "react";
-
-// component imports
-import ClientOpportunitiesTable from "../../components/customers/ClientOpportunitiesTable"
+import CustomerOpportunitiesTable from "../../components/customers/CustomerOpportunitiesTable"
 import OpportunityFollowUpTable from "../../components/customers/OpportunityFollowUpTable"
-
-//type imports
-import { opportunity } from '../../utils/types';
+import CustomerDetails from '../../components/customers/CustomerDetails';
+import { useGetCustomerDetails } from '../../hooks/useGetCustomerDetails';
+import { Opportunity } from '../../utils/types';
+import Main from '../../layout/Main'
 
 // component definition
 const CustomerDetailsView = () => {
-    // hook implementation
-    const { customerNIT =  "900123456"} = useParams<{ customerNIT: string }>();
-    const [selectedOpportunity, setSelectedOpportunity] = useState<opportunity | null>(null);
+    const { customerId =  ""} = useParams<{ customerId: string }>();
+    const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
+    const { data: customer, error, isLoading } = useGetCustomerDetails(customerId)
+
+    if (isLoading) return <div>Loading client details...</div>;
+    if (error) return <div>Error loading client details: {error.message}</div>;
+    if (!customer) return <div>Customer not found.</div>;
     
-    return <>
-        <h1>Customer Details</h1>
-        <h2>Top section</h2>
-        <h2>Middle section</h2>
-        <ClientOpportunitiesTable customerNIT={customerNIT} onSelectOpportunity={setSelectedOpportunity} />
-        {selectedOpportunity && <OpportunityFollowUpTable opportunity={selectedOpportunity} />}
-        <h2>Bottom section</h2>
-    </>;
+    return <Main>
+        <section className="flex flex-col gap-5">
+            <CustomerDetails customer={customer} />
+            <CustomerOpportunitiesTable customer={customer} onSelectOpportunity={setSelectedOpportunity} />
+            {selectedOpportunity && <OpportunityFollowUpTable opportunity={selectedOpportunity} />}
+        </section>
+    </Main>;
 }
 
 export default CustomerDetailsView
