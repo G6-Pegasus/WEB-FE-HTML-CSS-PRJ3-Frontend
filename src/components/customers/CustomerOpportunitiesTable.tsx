@@ -1,21 +1,23 @@
 import { useState } from 'react';
 import { useGetCustomerOpportunities } from '../../hooks/useGetCustomerOpportunities';
-import { Opportunity, Customer } from '../../utils/types'
+import { Opportunity } from '../../utils/types'
 
 // function imports
 import { formatDate, handleViewAllButtonClickTS, handleSort, sortArray, paginateArray, getPages, handlePreviousPage, handleNextPage } from '../../utils/functions';
 import { differenceInMonths } from 'date-fns';
+import TableSkeleton from '../common/TableSkeleton';
+import ErrorComponent from '../common/ErrorComponent';
 
 // props definition
 interface ClientOpportunitiesTableProps {
-    customer: Customer;
+    customerId: number;
     onSelectOpportunity: (opportunity: Opportunity) => void;
 }
 
 // component definition
-const ClientOpportunitiesTable = ({ customer, onSelectOpportunity }: ClientOpportunitiesTableProps) => {
+const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpportunitiesTableProps) => {
     // fetch hook implementation
-    const { data: opportunities, error, isLoading } = useGetCustomerOpportunities(customer.id)
+    const { data: opportunities, error, isLoading } = useGetCustomerOpportunities(customerId)
 
     // hook implementation
     const [currentTablePage, setCurrentTablePage] = useState(1);
@@ -24,8 +26,8 @@ const ClientOpportunitiesTable = ({ customer, onSelectOpportunity }: ClientOppor
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
 
     // conditional rendering
-    if (isLoading) return <div>Loading content, please be patient...</div>
-    if (error) return <div>An error occurred while fetching the information. Contact technical support and show them this code: {error.message}.</div>
+    if (isLoading) return <TableSkeleton rows={4} columns={6} />
+    if (error) return <ErrorComponent message={`An error occurred while fetching the information. Contact technical support and show them this code: ${error.message}.`} />
 
     // button view all / view less void implementation
     const handleViewAllButtonClick = (
@@ -46,7 +48,7 @@ const ClientOpportunitiesTable = ({ customer, onSelectOpportunity }: ClientOppor
     // this is the return statement
     return (
         <div className="w-full max-h-80">
-            <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
+            <div className="relative flex flex-col w-full h-auto text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
                 <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
                     <div className="flex items-center justify-between ">
                         <div>

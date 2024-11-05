@@ -5,7 +5,7 @@ export const getCustomers = async () => {
     return await fetcher("/customers");
 };
 
-export const getCustomerDetails = async (customerId: string) => {
+export const getCustomerDetails = async (customerId: number) => {
     return await fetcher(`/customers/${customerId}`);
 };
 

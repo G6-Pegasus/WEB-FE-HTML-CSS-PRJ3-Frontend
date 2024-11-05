@@ -6,17 +6,19 @@ import { Button } from "@mui/material";
 import { Customer, CustomerRow } from "../../utils/types";
 import { useUpdateCustomer } from '../../hooks/useUpdateCustomer'
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import TableSkeleton from '../common/TableSkeleton';
+import ErrorComponent from '../common/ErrorComponent';
 
 function ClientTable() {
   const { data: rows = [], isLoading, isError } = useGetCustomers();
   const { mutate: updateCustomer, isSuccess, isError: isUpdateError } = useUpdateCustomer();
-  const [dataRows, setDataRows] = useState<Customer[]>(rows)
+  const [dataRows, setDataRows] = useState<Customer[]>(rows);
   const navigate = useNavigate();
 
   useEffect(() => {
-    setDataRows(rows)
-  }, [rows])
+    setDataRows(rows);
+  }, [rows]);
 
   function handleUpdate(row: CustomerRow) {
     updateCustomer(row);
@@ -28,7 +30,7 @@ function ClientTable() {
     });
   }
 
-  async function handleToggleActive (customerRow: CustomerRow, isActive: boolean) {
+  async function handleToggleActive(customerRow: CustomerRow, isActive: boolean) {
     updateCustomer({ ...customerRow, active: !isActive });
     if (isSuccess) {
       Swal.fire("Updated!", "", "success");
@@ -43,11 +45,10 @@ function ClientTable() {
       title: "Oops...",
       text: "Something is wrong"
     });
-  };
+  }
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 90, hideable: true },
-    { field: 'nit', headerName: 'NIT', width: 150, editable: true },
+    { field: 'id', headerName: 'NIT', width: 150, editable: true },
     { field: 'name', headerName: 'Name', width: 150, editable: true },
     { field: 'address', headerName: 'Address', width: 200, editable: true },
     { field: 'city', headerName: 'City', width: 120, editable: true },
@@ -64,8 +65,7 @@ function ClientTable() {
           variant="contained"
           color="secondary"
           onClick={() => handleUpdate(params.row)}
-          sx={{ background: '#40b09f' }}
-          className="w-[8rem]"
+          className="bg-teal-500 w-full text-white px-4 py-2 text-xs font-semibold hover:bg-teal-600 rounded-md"
         >
           Update
         </Button>
@@ -78,10 +78,10 @@ function ClientTable() {
       renderCell: (params) => (
         <Button
           variant="contained"
-          color={params.row.active ? "error" : "success"}
           onClick={() => handleToggleActive(params.row, params.row.active)}
-          className="w-[8rem]"
-          sx={{ background: params.row.active ? '#f18f18' : '#68bc6c' }}
+          className={`w-full text-white px-4 py-2 text-xs font-semibold rounded-md ${
+            params.row.active ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
+          }`}
         >
           {params.row.active ? "Deactivate" : "Activate"}
         </Button>
@@ -90,14 +90,14 @@ function ClientTable() {
   ];
 
   const handleEditOption = (params: any) => {
-    if (params.field === 'update' || params.field === 'toggleActive' || params.field === 'active' || params.field === "__check__") return;
+    if (['update', 'toggleActive', 'active', "__check__"].includes(params.field)) return;
 
     Swal.fire({
       text: "Do you want to edit this line? Press 'Cancel' to go to the customer page.",
       showCancelButton: true
     }).then(r => {
-        if (r.isDismissed) navigate(`/customerDetails/${params.row.id}`);
-    })
+      if (r.isDismissed) navigate(`/customerDetails/${params.row.id}`);
+    });
   };
 
   const processRowUpdate = (newRow: GridRowModel, oldRow: GridRowModel) => {
@@ -107,15 +107,43 @@ function ClientTable() {
     return newRow;
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading customers.</div>;
+  if (isLoading) return <TableSkeleton rows={4} columns={7} />
+  if (isError) return <ErrorComponent message={`An error occurred while fetching the information. Contact technical support and show them this code: Error loading customers.`} />
 
   return (
-    <Box sx={{
-      width: '100%', // Ajuste del ancho en Material-UI
-      height: '80%', // Ocupa la altura completa del contenedor padre
-    }}
-    className="overflow-auto">
+    <Box
+      sx={{
+        width: '100%',
+        height: '80%',
+        '& .MuiDataGrid-root': {
+          backgroundColor: 'white',
+          fontSize: '0.875rem',
+        },
+        '& .MuiDataGrid-cell': {
+          padding: '8px',
+          borderBottom: '1px solid #e0e0e0',
+        },
+        '& .MuiDataGrid-columnHeaders': {
+          backgroundColor: '#f5f5f5',
+          color: '#374151',
+          borderBottom: '1px solid #e0e0e0',
+          fontWeight: 'bold',
+          fontSize: '0.875rem',
+        },
+        '& .MuiDataGrid-columnHeaderTitle': {
+          textOverflow: 'clip',
+          whiteSpace: 'normal',
+          lineHeight: '1.2',
+        },
+        '& .inactive-row': {
+          backgroundColor: '#fde2e2',
+          '&:hover': {
+            backgroundColor: '#fbb1b1',
+          },
+        },
+      }}
+      className="overflow-auto shadow-lg rounded-lg border border-slate-200"
+    >
       <DataGrid
         rows={dataRows}
         columns={columns}
@@ -131,14 +159,6 @@ function ClientTable() {
         disableRowSelectionOnClick
         onCellClick={handleEditOption}
         getRowClassName={(params) => params.row.active ? '' : 'inactive-row'}
-        sx={{
-          '& .inactive-row': {
-            backgroundColor: '#f8d7da', // Rojo claro
-            '&:hover': {
-              backgroundColor: '#f5c6cb', // Más oscuro en hover
-            },
-          },
-        }}
         processRowUpdate={processRowUpdate}
       />
     </Box>
