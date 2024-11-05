@@ -1,7 +1,6 @@
 import {
   createBrowserRouter,
-  RouterProvider,
-  BrowserRouter as Router, Route, Routes 
+  RouterProvider
 } from "react-router-dom";
 import CustomersView from "./pages/customers/CustomersView";
 import CreateCustomerView from "./pages/customers/CreateCustomerView";
@@ -10,8 +9,6 @@ import DashboardView from "./pages/dashboard/DashboardView";
 import OpportunitiesView from "./pages/opportunities/OpportunitiesView";
 import OpportunityDetailsView from "./pages/opportunities/OpportunityDetailsView";
 import FollowUpsView from "./pages/followUps/FollowUpsView";
-import ClientOpportunitiesTable from "./components/customers/clientOpportunitiesTable";
-import ClientDetail from "./components/customers/ClientDetail"
 
 const router = createBrowserRouter([
     // Dashboard
@@ -52,17 +49,5 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-    return (
-        <><ClientDetail />
-        <ClientOpportunitiesTable /></>
-
-    //   <Router>
-    //     <Routes>
-    //       <Route path="/" element={<Client_Opportunities_Table />} />
-    //       <Route path="/client/:customerId" element={<ClientDetail />} />
-    //     </Routes>
-    //   </Router>
-    );
-  }
-  return <RouterProvider router={router} />
+    return <RouterProvider router={router} />
 }

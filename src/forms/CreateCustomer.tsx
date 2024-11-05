@@ -1,24 +1,7 @@
 import React from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useCreateClient } from '../hooks/useCreateClient';
-
-interface Contact {
-  Cname: string
-  Cemail: string
-  Cphone: string
-}
-
-interface FormValues {
-  name: string
-  nit: number
-  direction: string
-  city: string
-  country: string
-  phone: number
-  email: string
-  isActive: boolean
-  contacts: Contact[]
-}
+import { useCreateCustomer } from '../hooks/useCreateCustomer';
+import { Customer } from '../utils/types';
 
 const countriesList = [
   {code: 'AR', name: 'Argentina' },
@@ -30,28 +13,10 @@ const countriesList = [
 ]
 
 const CreateClient: React.FC = () => {
-  const { mutate: createClient, isSuccess, isError } = useCreateClient()
-  const { register, handleSubmit, control, formState: { errors } } = useForm<FormValues>({
-    defaultValues: {
-      contacts: [{ Cname: '', Cemail: '', Cphone: '' }]
-    }
-  })
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'contacts',
-  })
-
-  const onSubmit = (data: FormValues) => {
-    const clientData = {
-      ...data,
-      contacts: data.contacts.map(contact => ({
-        cname: contact.Cname,
-        cemail: contact.Cemail,
-        cphone: contact.Cphone,
-      })),
-    }
-    createClient(clientData)
-  }
+  const { mutate: createCustomer, isSuccess, isError } = useCreateCustomer()
+  const { register, handleSubmit, control, formState: { errors } } = useForm<Customer>()
+  const { fields, append, remove } = useFieldArray({ control, name: 'contacts' })
+  const onSubmit = (customer: Customer) => createCustomer({ ...customer, id: crypto.randomUUID() })
   
   return (
     <div className='m-2'>
@@ -84,10 +49,10 @@ const CreateClient: React.FC = () => {
             <label className="text-sm font-medium mt-2">Direction</label>
             <input
               placeholder="Company direction"
-              {...register("direction", { required: "The direction is mandatory" })}
+              {...register("address", { required: "The direction is mandatory" })}
               className="mt-1 p-2 border rounded-md shadow-sm w-full"
             />
-            {errors.direction && <p className="text-red-500">{errors.direction.message}</p>}
+            {errors.address && <p className="text-red-500">{errors.address.message}</p>}
           </div>
           <div className="flex-1">
             <label className="text-sm font-medium mt-2">City</label>
@@ -119,7 +84,7 @@ const CreateClient: React.FC = () => {
           <div className="flex-1">
             <label className="text-sm font-medium mt-2">Email</label>
             <input
-              {...register("email", { required: "The email is mandatory",
+              {...register("corporateEmail", { required: "The email is mandatory",
                 validate: value => {
                   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                   return regex.test(value) || "The email is not valid";
@@ -127,7 +92,7 @@ const CreateClient: React.FC = () => {
               className="mt-1 p-2 border rounded-md shadow-sm w-full"
               placeholder="Enter the company email"
             />
-            {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+            {errors.corporateEmail && <p className="text-red-500">{errors.corporateEmail.message}</p>}
           </div>
         </div>
 
@@ -145,7 +110,7 @@ const CreateClient: React.FC = () => {
         <div className="flex items-center mt-4">
           <input
             type="checkbox"
-            {...register("isActive")}
+            {...register("active")}
             className="mr-2"
           />
           <label className="text-sm text-gray-700">Is Active</label>

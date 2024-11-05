@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { CustomerHook } from '../../hooks/useGetCustomers';
+import { useGetCustomers } from '../../hooks/useGetCustomers';
 import { Button } from "@mui/material";
-import axios from 'axios';
-import { CustomerRow } from "../../types/typesCustomers";
+import { CustomerRow } from "../../utils/types";
+import { updateCustomer } from '../../services/customerServices';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -13,7 +13,7 @@ const columns: GridColDef[] = [
   { field: 'city', headerName: 'City', width: 120, editable: true },
   { field: 'country', headerName: 'Country', width: 120, editable: true },
   { field: 'phone', headerName: 'Phone', width: 150, editable: true },
-  { field: 'email', headerName: 'Email', width: 200, editable: true },
+  { field: 'corporateEmail', headerName: 'Email', width: 200, editable: true },
   { field: 'active', headerName: 'Active', type: 'boolean', width: 100, editable: true },
   {
     field: "update",
@@ -39,7 +39,7 @@ const columns: GridColDef[] = [
       <Button
         variant="contained"
         color={params.row.active ? "error" : "success"}
-        onClick={() => handleToggleActive(params.row.id, params.row.active)}
+        onClick={() => handleToggleActive(params.row, params.row.active)}
         className={`w-[8rem]`}
         sx={{ background: params.row.active ? '#f18f18' : '#68bc6c' }}
       >
@@ -53,23 +53,22 @@ const columns: GridColDef[] = [
 
 async function handleUpdate(row: CustomerRow) {
   try {
-    const response = await axios.put(`https://web-fe-html-css-prj3-backend.onrender.com/customers/${row.id}`, row);
+    const response = await updateCustomer(row);
     console.log('Update successful:', response.data);
   } catch (error) {
     console.error('Error updating customer:', error);
   }
 }
 
-function handleToggleActive(id: string, isActive: boolean) {
-  console.log(`${isActive ? "Deactivate" : "Activate"} client with ID: ${id}`);
+async function handleToggleActive(row: CustomerRow, isActive: boolean) {
+    await handleUpdate({ ...row, active: !isActive })
 }
 
 function ClientTable() {
-  const { data: rows = [], isLoading, isError } = CustomerHook();
+  const { data: rows = [], isLoading, isError } = useGetCustomers();
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading customers.</div>;
-  console.log(rows);
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', margin: '0 auto', width: '80%' }}>

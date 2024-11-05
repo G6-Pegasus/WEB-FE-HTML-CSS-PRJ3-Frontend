@@ -1,15 +1,14 @@
 // hook import
 import { useState } from 'react';
-
-// type imports
-import { opportunity, followUpStep } from '../../utils/types'
+import { useGetOpportunityFollowUps } from '../../hooks/useGetOpportunityFollowUps';
+import { Opportunity, FollowUp } from '../../utils/types'
 
 // function imports
 import { formatDate, handleViewAllButtonClickTS, handleSort, sortArray, paginateArray, getPages, handlePreviousPage, handleNextPage } from '../../utils/functions';
 import { differenceInMonths } from 'date-fns';
 
 interface OpportunityFollowUpTableProps {
-    opportunity: opportunity;
+    opportunity: Opportunity;
 }
 
 const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps) => {
@@ -20,11 +19,15 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
 
     // this will get the sub-array followUpSteps from the given opportunity
-    const opportunityFollowUpSteps = opportunity.followUpSteps;
+    const { data: opportunityFollowUps, error, isLoading } = useGetOpportunityFollowUps(opportunity.id)
+
+    // conditional rendering
+    if (isLoading) return <div>Loading content, please be patient...</div>
+    if (error) return <div>An error occurred while fetching the information. Contact technical support and show them this code: {error.message}.</div>
 
     // button view all / view less void implementation
     const handleViewAllButtonClick = (
-        sortedOpportunityFollowUpSteps: followUpStep[], 
+        sortedOpportunityFollowUpSteps: FollowUp[], 
         viewAllButton: boolean, 
         setRowsPerTablePage: React.Dispatch<React.SetStateAction<number>>, 
         setcurrentTablePage: React.Dispatch<React.SetStateAction<number>>, 
@@ -33,7 +36,7 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
         handleViewAllButtonClickTS(sortedOpportunityFollowUpSteps, viewAllButton, setRowsPerTablePage, setcurrentTablePage, setViewAllButton);
     };
     
-    const sortedOpportunityFollowUpSteps = sortArray(opportunityFollowUpSteps || [], sortConfig);
+    const sortedOpportunityFollowUpSteps = sortArray(opportunityFollowUps || [], sortConfig);
 
     // totalPages is calculated by the getPages function
     const totalPages = getPages(sortedOpportunityFollowUpSteps, rowsPerTablePage);

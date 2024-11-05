@@ -1,11 +1,6 @@
-// hook import
 import { useState } from 'react';
-
-// tanstack/react-query import
-import { useQuery } from '@tanstack/react-query'
-
-// type imports
-import { opportunity } from '../../utils/types'
+import { useGetCustomerOpportunities } from '../../hooks/useGetCustomerOpportunities';
+import { Opportunity, Customer } from '../../utils/types'
 
 // function imports
 import { formatDate, handleViewAllButtonClickTS, handleSort, sortArray, paginateArray, getPages, handlePreviousPage, handleNextPage } from '../../utils/functions';
@@ -13,24 +8,17 @@ import { differenceInMonths } from 'date-fns';
 
 // props definition
 interface ClientOpportunitiesTableProps {
-    customerNIT: string;
-    onSelectOpportunity: (opportunity: opportunity) => void;
+    customer: Customer;
+    onSelectOpportunity: (opportunity: Opportunity) => void;
 }
 
 // component definition
-const ClientOpportunitiesTable = ({ customerNIT, onSelectOpportunity }: ClientOpportunitiesTableProps) => {
+const ClientOpportunitiesTable = ({ customer, onSelectOpportunity }: ClientOpportunitiesTableProps) => {
     // fetch hook implementation
-    const { data: opportunities, error, isLoading } = useQuery<opportunity[], Error>({
-        queryKey: ['opportunities'],
-        queryFn: async () => {
-          const response = await fetch('http://localhost:3001/opportunities')
-          if (!response.ok) throw new Error('An error occurred while fetching the information. The server has rejected the connection.')
-          return response.json() as Promise<opportunity[]>
-        }
-    });
+    const { data: opportunities, error, isLoading } = useGetCustomerOpportunities(customer.id)
 
     // hook implementation
-    const [currentTablePage, setcurrentTablePage] = useState(1);
+    const [currentTablePage, setCurrentTablePage] = useState(1);
     const [rowsPerTablePage, setRowsPerTablePage] = useState(5);
     const [viewAllButton, setViewAllButton] = useState(false);
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
@@ -41,7 +29,7 @@ const ClientOpportunitiesTable = ({ customerNIT, onSelectOpportunity }: ClientOp
 
     // button view all / view less void implementation
     const handleViewAllButtonClick = (
-        clientOpportunities: opportunity[], 
+        clientOpportunities: Opportunity[], 
         viewAllButton: boolean, 
         setRowsPerTablePage: React.Dispatch<React.SetStateAction<number>>, 
         setcurrentTablePage: React.Dispatch<React.SetStateAction<number>>, 
@@ -51,23 +39,8 @@ const ClientOpportunitiesTable = ({ customerNIT, onSelectOpportunity }: ClientOp
     };
 
     // sortedOpportunities will be default array if sortConfig is null, otherwise it will be sorted by the key and direction in sortConfig calling sortArray function
-    const sortedOpportunities = sortArray(opportunities || [], sortConfig);
-
-    // this filters the sorted (or non-sorted) opportunities by customerNIT and asigns it to clientOpportunities
-    const clientOpportunities = sortedOpportunities.filter(opportunity => opportunity.nit === customerNIT);
-    
-    // since this array only contains opportunities for the selected customer, any of the opportunities can serve as a reference for the customer name
-    const customerName = clientOpportunities[0].client;
-
-
-    const handleNextPage = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-    };
-//rounded-xl
-    // totalPages is calculated by the getPages function
+    const clientOpportunities = sortArray(opportunities || [], sortConfig);
     const totalPages = getPages(clientOpportunities, rowsPerTablePage);
-
-    // currentRows is calculated by the paginateArray function
     const currentRows = paginateArray(clientOpportunities, rowsPerTablePage, currentTablePage);
 
     // this is the return statement
@@ -78,12 +51,12 @@ const ClientOpportunitiesTable = ({ customerNIT, onSelectOpportunity }: ClientOp
                     <div className="flex items-center justify-between ">
                         <div>
                             <h3 className="text-lg font-semibold text-slate-800">Opportunities for</h3>
-                            <p className="text-slate-500">{customerName}</p>
+                            <p className="text-slate-500">{customer.name}</p>
                         </div>
                         <div className="flex flex-col gap-2 shrink-0 sm:flex-row">
                             <button
                             className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                            type="button" onClick={() => handleViewAllButtonClick(clientOpportunities, viewAllButton, setRowsPerTablePage, setcurrentTablePage, setViewAllButton)} disabled={clientOpportunities.length <= rowsPerTablePage && !viewAllButton}>
+                            type="button" onClick={() => handleViewAllButtonClick(clientOpportunities, viewAllButton, setRowsPerTablePage, setCurrentTablePage, setViewAllButton)} disabled={clientOpportunities.length <= rowsPerTablePage && !viewAllButton}>
                                 {viewAllButton ? 'View Less' : 'View All'}
                             </button>
                             <button
@@ -167,7 +140,7 @@ const ClientOpportunitiesTable = ({ customerNIT, onSelectOpportunity }: ClientOp
                             </tr>
                         </thead>                        
                         <tbody>
-                            {currentRows?.map(opportunity => {
+                            {currentRows?.map((opportunity: Opportunity) => {
                                 const estimatedCompletionDate = new Date(opportunity.estimatedCompletionDate)
                                 const currentDate = new Date()
                                 const monthsDifference = differenceInMonths(estimatedCompletionDate, currentDate)
@@ -188,15 +161,15 @@ const ClientOpportunitiesTable = ({ customerNIT, onSelectOpportunity }: ClientOp
                                         <td className="p-4 border-b border-slate-200 w-40 break-words">
                                             <div className="flex flex-col">
                                                 <p className="text-sm text-slate-500">
-                                                    {opportunity.opportunityDescription}
+                                                    {opportunity.description}
                                                 </p>
                                             </div>
                                         </td>                                
                                         <td className="p-4 border-b border-slate-200 w-40 break-words">
                                             <div className={`border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${
-                                            opportunity.status === 'Approved' ? 'text-green-900 bg-green-500/20' :
-                                            opportunity.status === 'Under Study' ? 'text-blue-900 bg-blue-500/20' :
-                                            opportunity.status === 'Purchase Order' ? 'text-purple-900 bg-purple-500/20' :
+                                            opportunity.status === 'Executed' ? 'text-green-900 bg-green-500/20' :
+                                            opportunity.status === 'Under study' ? 'text-blue-900 bg-blue-500/20' :
+                                            opportunity.status === 'Purchase order' ? 'text-purple-900 bg-purple-500/20' :
                                             opportunity.status === 'Opening' ? 'text-yellow-900 bg-yellow-500/20' :
                                             ''}`}>
                                                 {opportunity.status}
@@ -208,7 +181,7 @@ const ClientOpportunitiesTable = ({ customerNIT, onSelectOpportunity }: ClientOp
                                             </div>
                                         </td>
                                         <td className="p-4 border-b border-slate-200 text-right text-green-500 font-bold">
-                                            {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'COP' }).format(opportunity.estimatedValue)}
+                                            {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'COP' }).format(opportunity.estimatedBusinessValue)}
                                         </td>                                        
                                         <td className="p-4 border-b border-slate-200">
                                             <button
@@ -261,14 +234,14 @@ const ClientOpportunitiesTable = ({ customerNIT, onSelectOpportunity }: ClientOp
                         <button
                         className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                         type="button"
-                        onClick={() => handlePreviousPage(currentTablePage, setcurrentTablePage)}
+                        onClick={() => handlePreviousPage(currentTablePage, setCurrentTablePage)}
                         disabled={currentTablePage === 1 || viewAllButton}>
                             Previous
                         </button>
                         <button
                         className="rounded border border-slate-300 py-2.5 px-3 text-center text-xs font-semibold text-slate-600 transition-all hover:opacity-75 focus:ring focus:ring-slate-300 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                         type="button"
-                        onClick={() => handleNextPage(currentTablePage, setcurrentTablePage)}
+                        onClick={() => handleNextPage(currentTablePage, setCurrentTablePage)}
                         disabled={currentTablePage === totalPages || viewAllButton}>
                             Next
                         </button>
