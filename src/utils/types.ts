@@ -1,12 +1,11 @@
-interface Contact {
+export interface Contact {
     Cname: string; 
     Cemail: string; 
     Cphone: string;
 }
 
 export interface Customer {
-    id: string;
-    nit: number;
+    id: number;
     name: string;
     address: string;
     city: string;
@@ -36,13 +35,14 @@ export interface Opportunity {
 }
 
 export type contactTypes = "call" | "email" | "face-to-face meeting"
+export type FollowUpStatus = "In Progress" | "Pending" | "In Review" | "Done"
 
 export interface FollowUp {
     id: string;
     opportunityId: string;
     contactType: contactTypes;
     contactDate: string;
-    customerContacts: Contact[]
     commercialExecutive: string;
     description: string;
+    status: FollowUpStatus
 }

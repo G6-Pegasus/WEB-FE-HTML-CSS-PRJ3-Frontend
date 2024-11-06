@@ -6,6 +6,8 @@ import { Opportunity, FollowUp } from '../../utils/types'
 // function imports
 import { formatDate, handleViewAllButtonClickTS, handleSort, sortArray, paginateArray, getPages, handlePreviousPage, handleNextPage } from '../../utils/functions';
 import { differenceInMonths } from 'date-fns';
+import TableSkeleton from '../common/TableSkeleton';
+import ErrorComponent from '../common/ErrorComponent';
 
 interface OpportunityFollowUpTableProps {
     opportunity: Opportunity;
@@ -22,8 +24,8 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
     const { data: opportunityFollowUps, error, isLoading } = useGetOpportunityFollowUps(opportunity.id)
 
     // conditional rendering
-    if (isLoading) return <div>Loading content, please be patient...</div>
-    if (error) return <div>An error occurred while fetching the information. Contact technical support and show them this code: {error.message}.</div>
+    if (isLoading) return <TableSkeleton rows={4} columns={6} />
+    if (error) return <ErrorComponent message={`An error occurred while fetching the information. Contact technical support and show them this code: ${error.message}.`} />
 
     // button view all / view less void implementation
     const handleViewAllButtonClick = (
@@ -36,16 +38,12 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
         handleViewAllButtonClickTS(sortedOpportunityFollowUpSteps, viewAllButton, setRowsPerTablePage, setcurrentTablePage, setViewAllButton);
     };
     
-    const sortedOpportunityFollowUpSteps = sortArray(opportunityFollowUps || [], sortConfig);
-
-    // totalPages is calculated by the getPages function
-    const totalPages = getPages(sortedOpportunityFollowUpSteps, rowsPerTablePage);
-
-    // currentRows is calculated by the paginateArray function
-    const currentRows = paginateArray(sortedOpportunityFollowUpSteps, rowsPerTablePage, currentTablePage);
+    const sortedOpportunityFollowUpSteps: FollowUp[] = sortArray(opportunityFollowUps || [], sortConfig);
+    const totalPages: number = getPages(sortedOpportunityFollowUpSteps, rowsPerTablePage);
+    const currentRows: FollowUp[] = paginateArray(sortedOpportunityFollowUpSteps, rowsPerTablePage, currentTablePage);
     
     return (
-        <div className="mx-auto max-h-96 mb-32">
+        <div className="w-full max-h-96">
             <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
                 <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
                     <div className="flex items-center justify-between ">
@@ -75,10 +73,10 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                         <thead className="sticky top-0 bg-white bg-opacity-100 z-10">
                             <tr>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48" onClick={() => handleSort('task', sortConfig, setSortConfig)}>
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48" onClick={() => handleSort('description', sortConfig, setSortConfig)}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
-                                        Task {sortConfig?.key === 'task' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
+                                        Description {sortConfig?.key === 'description' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -87,10 +85,10 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                     </p>
                                 </th>                        
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48" onClick={() => handleSort('assignedTo', sortConfig, setSortConfig)}>
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-48" onClick={() => handleSort('commercialExecutive', sortConfig, setSortConfig)}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
-                                    Department {sortConfig?.key === 'assignedTo' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
+                                    Commercial Executive {sortConfig?.key === 'commercialExecutive' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -111,42 +109,54 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                     </p>
                                 </th>
                                 <th
-                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('deadline', sortConfig, setSortConfig)}>
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('contactDate', sortConfig, setSortConfig)}>
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500 max-w-xs break-words">
-                                    Deadline {sortConfig?.key === 'deadline' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
+                                    Contact Date {sortConfig?.key === 'contactDate' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                                     </svg>
                                     </p>
-                                </th>                                
+                                </th>
+                                <th
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('contactType', sortConfig, setSortConfig)}>
+                                    <p
+                                    className="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500 max-w-xs break-words">
+                                    Contact Type {sortConfig?.key === 'contactType' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                        stroke="currentColor" aria-hidden="true" className="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                                    </svg>
+                                    </p>
+                                </th>                              
                                 <th
                                     className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40">                        
                                 </th>                                                               
                             </tr>
                         </thead>                        
                         <tbody>
-                            {currentRows?.map(followUpStep => {
-                                const followUpStepDeadline = new Date(followUpStep.deadline)
+                            {currentRows?.map((followUpStep, index) => {
+                                const followUpStepDeadline = new Date(followUpStep.contactDate)
                                 const currentDate = new Date()
                                 const monthsDifference = differenceInMonths(followUpStepDeadline, currentDate)
 
                                 const dateClass = monthsDifference <= 3 ? 'text-red-900 bg-red-500/20' : monthsDifference <= 6 ? 'text-yellow-900 bg-yellow-500/20' : 'text-green-900 bg-green-500/20';                                
                                 return (
-                                    <tr key={followUpStep.step}>
+                                    <tr key={index}>
                                         <td className="p-4 border-b border-slate-200 w-40 break-words">
                                             <div className="flex flex-col">
                                                 <p className="text-sm font-semibold text-slate-700">
-                                                    {followUpStep.task}
+                                                    {followUpStep.description}
                                                 </p>                                                
                                             </div>
                                         </td>
                                         <td className="p-4 border-b border-slate-200 w-40 break-words">
                                             <div className="flex flex-col">
                                                 <p className="text-sm text-slate-500">
-                                                    {followUpStep.assignedTo}
+                                                    {followUpStep.commercialExecutive}
                                                 </p>
                                             </div>
                                         </td>                                
@@ -162,8 +172,17 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                         </td>
                                         <td className="p-4 border-b border-slate-200">                                        
                                             <div className={`border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${dateClass}`}>
-                                                {formatDate(followUpStep.deadline)}
+                                                {formatDate(followUpStep.contactDate)}
                                             </div>
+                                        </td>
+                                        <td className="p-4 border-b border-slate-200 w-40 break-words">
+                                            <div className={`border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${
+                                            followUpStep.contactType === 'call' ? 'text-green-900 bg-green-500/20' :
+                                            followUpStep.contactType === 'email' ? 'text-blue-900 bg-blue-500/20' :
+                                            followUpStep.contactType === 'face-to-face meeting' ? 'text-purple-900 bg-purple-500/20' :
+                                            ''}`}>
+                                                {followUpStep.contactType}
+                                            </div>                                    
                                         </td>
                                         <td className="p-4 border-b border-slate-200">                                            
                                             <button

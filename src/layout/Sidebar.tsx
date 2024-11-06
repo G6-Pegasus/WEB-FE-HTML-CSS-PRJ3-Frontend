@@ -12,8 +12,8 @@ function Sidebar() {
     <>
       {/* Sidebar for large screens */}
       <div
-        className={`hidden md:flex flex-col bg-blue-800 text-white transition-all duration-300 ${
-          isHovered ? "w-64 items-start" : "w-16 items-center"
+        className={`hidden fixed z-20 md:flex flex-col bg-blue-800 text-white transition-all duration-300 ${
+          isHovered ? "w-64 items-start" : "w-20 items-center"
         } h-full`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -63,8 +63,8 @@ function Sidebar() {
       </div>
 
       {/* Bottom Navigation for mobile screens */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-blue-800 text-white flex justify-around py-2">
-        <Link to="/dashboard" className="flex flex-col items-center">
+      <div className="md:hidden fixed h-16 bottom-0 left-0 right-0 bg-blue-800 text-white z-10 flex items-center justify-around py-2">
+        <Link to="/" className="flex flex-col items-center">
           <DashboardIcon fontSize="small" />
           <span className="text-xs">Dashboard</span>
         </Link>
