@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCustomerOpportunities } from "../services/opportunityServices";
+import { getOpportunities, getCustomerOpportunities } from "../services/opportunityServices";
 import { Opportunity } from "../utils/types";
 
 export const useGetCustomerOpportunities = (customerId: number) => {
@@ -8,3 +8,15 @@ export const useGetCustomerOpportunities = (customerId: number) => {
         queryFn: () => getCustomerOpportunities(customerId),
     });
 };
+
+export const useGetOpportunities = () => {
+    return useQuery<Opportunity[]>({
+        queryKey: ["opportunities"],
+        queryFn: () => getOpportunities(),
+    });
+};
+
+
+
+
+
