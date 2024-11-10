@@ -2,8 +2,14 @@ import TableSkeleton from '../common/TableSkeleton';
 import Loader from '../common/Loader';
 import ErrorComponent from '../common/ErrorComponent';
 import { useGetOpportunityDetails } from '../../hooks/useGetOpportunityDetails';
+import { Opportunity } from '../../utils/types';
 
-export default function OpportunityDetails({ opportunityId }: { opportunityId: number }) {
+interface OpportunityDetailsProps {
+    opportunityId: number;
+    onSelectOpportunity: (opportunity: Opportunity) => void;
+}
+
+export default function OpportunityDetails({ opportunityId, onSelectOpportunity }: OpportunityDetailsProps) {
     const { data: opportunity, error, isLoading } = useGetOpportunityDetails(opportunityId)
 
     if (isLoading) return <div className='w-full h-auto p-6'>
@@ -12,6 +18,8 @@ export default function OpportunityDetails({ opportunityId }: { opportunityId: n
     </div>;
     if (error) return <ErrorComponent message={`An error occurred while fetching the information. Contact technical support and show them this code: ${error.message}.`} />
     if (!opportunity) return <ErrorComponent message={`An error occurred while fetching the information. Contact technical support and show them this code: Opportunity with ID ${opportunityId} not found.`} />
+
+    onSelectOpportunity(opportunity);
 
     return (
         <div className="w-full p-6 bg-white shadow-md border-gray-200 rounded-xl">
