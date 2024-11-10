@@ -58,11 +58,30 @@ function OpportunityTable() {
             cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
-                setDataRows(dataRows.filter((row) => row.id !== id));
-                Swal.fire("Deleted!", "The opportunity has been removed.", "success");
+                fetch(`http://localhost:3001/opportunities/${id}`, {
+                    method: 'DELETE',
+                    
+                }) 
+                .then((response) =>{
+                    if (response.ok){
+                        setDataRows(dataRows.filter((row) => row.id !== id));
+                        Swal.fire("Deleted!", "The opportunity has been removed.", "success");
+
+
+                    }else{
+                         Swal.fire("Error!", "Failed to delete the opportunity.", "error");
+                    }
+                })
+                .catch((error) =>{
+                    console.error("Error deleting opportunity:", error);
+                    Swal.fire("ERROR!", "The entry could not be properly deleted.", "warning");
+                })
             }
-        });
+      
+        })
+        ;
     };
+    
 
     const handleCancelClick = (id: GridRowId) => () => {
         setRowModesModel((prev) => ({ ...prev, [id]: { mode: GridRowModes.View, ignoreModifications: true } }));
