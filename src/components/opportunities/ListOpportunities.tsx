@@ -29,7 +29,7 @@ function OpportunityTable() {
     }, [rows]);
 
     const handleEditClick = (id: GridRowId) => () => {
-        setRowModesModel((prev) => ({ ...prev, [id]: { mode: GridRowModes.Edit } }));
+        navigate(`/updateOpportunity/${id}`)
     };
 
     const handleSaveClick = (id: GridRowId) => () => {
