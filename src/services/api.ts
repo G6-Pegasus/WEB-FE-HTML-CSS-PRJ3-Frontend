@@ -1,6 +1,5 @@
-export const BASE_URL = "http://localhost:3001";
-//https://web-fe-html-css-prj3-backend.onrender.com
-//http://localhost:3001
+export const BASE_URL = "https://web-fe-html-css-prj3-backend.onrender.com";
+
 export const fetcher = async (endpoint: string, options: RequestInit = {}) => {
     const isFormData = options.body instanceof FormData;
 

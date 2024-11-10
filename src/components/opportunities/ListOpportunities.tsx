@@ -58,7 +58,7 @@ function OpportunityTable() {
             cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`http://localhost:3001/opportunities/${id}`, {
+                fetch(`https://web-fe-html-css-prj3-backend.onrender.com/opportunities/${id}`, {
                     method: 'DELETE',
                     
                 }) 
