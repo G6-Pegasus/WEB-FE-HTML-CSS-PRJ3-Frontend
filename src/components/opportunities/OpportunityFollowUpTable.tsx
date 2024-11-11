@@ -178,8 +178,8 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                         <td className="p-4 border-b border-slate-200 w-40 break-words">
                                             <div className={`border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${
                                             followUpStep.contactType === 'call' ? 'text-green-900 bg-green-500/20' :
-                                            followUpStep.contactType === 'email' ? 'text-blue-900 bg-blue-500/20' :
-                                            followUpStep.contactType === 'face-to-face meeting' ? 'text-purple-900 bg-purple-500/20' :
+                                            followUpStep.contactType === "email" ? 'text-blue-900 bg-blue-500/20' :
+                                            followUpStep.contactType === 'meeting' ? 'text-purple-900 bg-purple-500/20' :
                                             ''}`}>
                                                 {followUpStep.contactType}
                                             </div>                                    

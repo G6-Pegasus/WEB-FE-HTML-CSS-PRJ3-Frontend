@@ -17,7 +17,8 @@ export interface Customer {
 export interface CustomerRow extends Customer {
     hasChanged?: boolean
 }
-export type bussinesLines = "outsourcing resources" | "web development" | "mobile" | "development"
+
+export type bussinesLines = "outsourcing resources" | "web development" | "mobile development" | "IT Consultancy"
 export type opportunitiesStatus = "Opening" | "Under study" | "Purchase order" | "Executed"
 export interface Opportunity {
     id: string
@@ -32,7 +33,8 @@ export interface Opportunity {
 export interface OpportunityRow extends Opportunity {
     hasChanged?: boolean
 }
-export type contactTypes = "call" | "email" | "face-to-face meeting"
+
+export type contactTypes = "call" | "email" | "meeting"
 export type FollowUpStatus = "In Progress" | "Pending" | "In Review" | "Done"
 export interface FollowUp {
     id: string
