@@ -2,7 +2,7 @@ import Main from '../../layout/Main'
 
 const DashboardView = () => {
     return <Main>
-        Dashboard
+        Dashboard View
     </Main>
 };
   

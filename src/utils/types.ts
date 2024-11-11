@@ -20,7 +20,7 @@ export interface CustomerRow extends Customer {
     hasChanged?: boolean;
 }
 
-export type bussinesLines = "outsourcing resources" | "web development" | "mobile" | "development"
+export type bussinesLines = "outsourcing resources" | "web development" | "mobile development" | "IT Consultancy"
 export type opportunitiesStatus = "Opening" | "Under study" | "Purchase order" | "Executed"
 
 export interface Opportunity {
