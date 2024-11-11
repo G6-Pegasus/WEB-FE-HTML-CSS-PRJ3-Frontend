@@ -10,4 +10,12 @@ export const addOpportunity = async (opportunity: Opportunity) => {
         method: 'POST',
         body: JSON.stringify(opportunity)
     });
+}
+
+export const getOpportunityDetails = async (opportunityId: number) => {
+    return await fetcher(`/opportunities/${opportunityId}`);
+}
+
+export const getOpportunities = async () => {
+    return await fetcher("/opportunities");
 };

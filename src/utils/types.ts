@@ -34,7 +34,7 @@ export interface Opportunity {
     status: opportunitiesStatus;
 }
 
-export type contactTypes = "call" | "email" | "face-to-face meeting"
+export type contactTypes = "call" | "email" | "meeting"
 export type FollowUpStatus = "In Progress" | "Pending" | "In Review" | "Done"
 
 export interface FollowUp {
