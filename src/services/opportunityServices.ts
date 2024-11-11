@@ -1,10 +1,9 @@
 import { OpportunityRow } from "../utils/types";
-import { fetcher } from "./api"
+import { fetcher } from "./api";
 
 export const getOpportunities = async () => {
     return await fetcher("/opportunities")
-};
-
+}
 export const getCustomerOpportunities = async (customerId: number) => {
     return await fetcher(`/opportunities?customerId=${customerId}`)
 }
@@ -15,5 +14,5 @@ export const updateOpportunity = async (opportunity: OpportunityRow) => {
     })
 }
 export const getOpportunityByID = async (id: number) => {
-    return await fetcher(`/opportunities/${id}`);
+    return await fetcher(`/opportunities/${id}`)
 }

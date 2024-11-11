@@ -7,19 +7,19 @@ import { getOpportunityByID } from '../services/opportunityServices';
 import Swal from 'sweetalert2';
 
 interface OpportunityFormValues {
-  client: string;
-  businessName: string;
-  businessLine: string;
-  description: string;
-  estimatedValue: number;
-  estimatedDate: string;
-  status: string;
+  client: string
+  businessName: string
+  businessLine: string
+  description: string
+  estimatedValue: number
+  estimatedDate: string
+  status: string
 }
 
 const OpportunityForm: React.FC = () => {
-  const { control, handleSubmit, setValue, formState: { errors } } = useForm<OpportunityFormValues>();
-  const { opportunityId: opportunity_id } = useParams<{ opportunityId: string }>(); 
-  const { mutate: updateOpportunity ,isSuccess, isError: isUpdateError } = useUpdateOpportunity();
+  const { control, handleSubmit, setValue, formState: { errors } } = useForm<OpportunityFormValues>()
+  const { opportunityId: opportunity_id } = useParams<{ opportunityId: string }>()
+  const { mutate: updateOpportunity ,isSuccess, isError: isUpdateError } = useUpdateOpportunity()
 
   console.log("Id", opportunity_id);
   const allowedTransitions: { [key: string]: string[] } = {
@@ -30,25 +30,25 @@ const OpportunityForm: React.FC = () => {
     "": ["open"], 
   }
   const handleStatusChange = (currentStatus: string, newStatus: string) => {
-    return allowedTransitions[currentStatus]?.includes(newStatus);
-  };
+    return allowedTransitions[currentStatus]?.includes(newStatus)
+  }
   useEffect(() => {
     const fetchOpportunityData = async () => {
       if (opportunity_id) {
-        const opportunity = await getOpportunityByID(Number(opportunity_id));
+        const opportunity = await getOpportunityByID(Number(opportunity_id))
         if (opportunity) {
-          setValue("businessName", opportunity.businessName);
-          setValue("businessLine", opportunity.businessLine);
-          setValue("description", opportunity.description);
-          setValue("estimatedValue", opportunity.estimatedBusinessValue);
-          setValue("estimatedDate", opportunity.estimatedCompletionDate);
-          setValue("status", opportunity.status);
-          console.log(opportunity);
+          setValue("businessName", opportunity.businessName)
+          setValue("businessLine", opportunity.businessLine)
+          setValue("description", opportunity.description)
+          setValue("estimatedValue", opportunity.estimatedBusinessValue)
+          setValue("estimatedDate", opportunity.estimatedCompletionDate)
+          setValue("status", opportunity.status)
+          console.log(opportunity)
         }
       }
-    };
-    fetchOpportunityData();
-  }, [opportunity_id, setValue]);
+    }
+    fetchOpportunityData()
+  }, [opportunity_id, setValue])
 
 
   const onSubmit = (data: OpportunityFormValues) => {
@@ -61,18 +61,18 @@ const OpportunityForm: React.FC = () => {
       customerId: Number(data.client), 
       estimatedBusinessValue:  data.estimatedValue, 
       estimatedCompletionDate: data.estimatedDate
-    });
+    })
     if (isSuccess) {
       Swal.fire("Updated!", "", "success").then(() => {
-      window.history.back();
-      });
+      window.history.back()
+      })
     }
     if (isUpdateError) Swal.fire({
       icon: "error",
       title: "Oops...",
       text: "Something is wrong"
-    });
-  };
+    })
+  }
 
   return (
     <div className="m-2">
@@ -186,12 +186,12 @@ const OpportunityForm: React.FC = () => {
                   id="status"
                   className="mt-1 p-2 border rounded-md shadow-sm w-full"
                   onChange={(e) => {
-                    const newStatus = e.target.value;
-                    const currentStatus = field.value;
+                    const newStatus = e.target.value
+                    const currentStatus = field.value
                     if (handleStatusChange(currentStatus, newStatus)) {
                       field.onChange(newStatus)
                     } else {
-                      Swal.fire("Transición no permitida", `No puedes cambiar el estado de ${currentStatus} a ${newStatus}.`, "error");
+                      Swal.fire("Transición no permitida", `No puedes cambiar el estado de ${currentStatus} a ${newStatus}.`, "error")
                     }
                   }}
                 >
