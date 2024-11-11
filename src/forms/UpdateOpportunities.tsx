@@ -1,5 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
+import { bussinesLines , opportunitiesStatus } from '../utils/types';
+import { useUpdateOpportunity} from '../hooks/useUpdateOpportunity';
+import { getOpportunityByID } from '../services/opportunityServices';
+import Swal from 'sweetalert2';
 
 interface OpportunityFormValues {
   client: string;
@@ -12,10 +17,52 @@ interface OpportunityFormValues {
 }
 
 const OpportunityForm: React.FC = () => {
-  const { control, handleSubmit, formState: { errors } } = useForm<OpportunityFormValues>();
+  const { control, handleSubmit, setValue, formState: { errors } } = useForm<OpportunityFormValues>();
+  const { opportunityId: opportunity_id } = useParams<{ opportunityId: string }>(); 
+  const { mutate: updateOpportunity ,isSuccess, isError: isUpdateError } = useUpdateOpportunity();
+
+  console.log("Id", opportunity_id);
+
+  useEffect(() => {
+    const fetchOpportunityData = async () => {
+      if (opportunity_id) {
+        const opportunity = await getOpportunityByID(Number(opportunity_id));
+        if (opportunity) {
+          setValue("businessName", opportunity.businessName);
+          setValue("businessLine", opportunity.businessLine);
+          setValue("description", opportunity.description);
+          setValue("estimatedValue", opportunity.estimatedBusinessValue);
+          setValue("estimatedDate", opportunity.estimatedCompletionDate);
+          setValue("status", opportunity.status);
+          console.log(opportunity);
+        }
+      }
+    };
+    fetchOpportunityData();
+  }, [opportunity_id, setValue]);
+
 
   const onSubmit = (data: OpportunityFormValues) => {
-    console.log(data);
+    updateOpportunity({
+      id: opportunity_id || '',
+      businessName: data.businessName,
+      businessLine: data.businessLine as bussinesLines,
+      description: data.description,
+      status: data.status as opportunitiesStatus,
+      customerId: Number(data.client), 
+      estimatedBusinessValue:  data.estimatedValue, 
+      estimatedCompletionDate: data.estimatedDate
+    });
+    if (isSuccess) {
+      Swal.fire("Updated!", "", "success").then(() => {
+      window.history.back();
+      });
+    }
+    if (isUpdateError) Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something is wrong"
+    });
   };
 
   return (
@@ -24,23 +71,11 @@ const OpportunityForm: React.FC = () => {
         <h1 className='font-bold text-2xl mb-4'>Update Opportunity</h1>
         <div className="flex flex-col md:flex-row md:space-x-4 mb-4">
           <div className="flex-1">
-            <label className="text-sm font-medium mt-2">Customer</label>
-            <Controller
-              name="client"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <input {...field} id="client" readOnly className="mt-1 p-2 border rounded-md shadow-sm w-full" />
-              )}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col md:flex-row md:space-x-4 mb-4">
-          <div className="flex-1">
             <label className="text-sm font-medium mt-2">Business Name</label>
             <Controller
               name="businessName"
               control={control}
+              defaultValue=""
               render={({ field }) => (
                 <input
                   {...field}
@@ -57,21 +92,22 @@ const OpportunityForm: React.FC = () => {
             <div className="flex-1">
                 <label htmlFor="line" className="text-sm font-medium mt-2">Business Line</label>
                 <Controller
-                name="businessLine"
-                control={control}
-                render={({ field }) => (
+                  name="businessLine"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
                     <select
-                    {...field}
-                    id="status"
-                    className="mt-1 p-2 border rounded-md shadow-sm w-full"
+                      {...field}
+                      id="businessLine"
+                      className="mt-1 p-2 border rounded-md shadow-sm w-full"
                     >
-                    <option value="" disabled selected>Select a line</option>
-                    <option value="outsoursing">Outsoursing Resources</option>
-                    <option value="web">Web Development</option>
-                    <option value="mobile">Mobile Development</option>
-                    <option value= "consulting">IT Consulting</option>
+                      <option value="" disabled>Select a line</option>
+                      <option value="outsourcing">Outsourcing Resources</option>
+                      <option value="web">Web Development</option>
+                      <option value="mobile">Mobile Development</option>
+                      <option value="consulting">IT Consulting</option>
                     </select>
-                )}
+                  )}
                 />
                 {errors.businessLine && <p className="text-red-500">{errors.businessLine.message}</p>}
             </div>
@@ -81,6 +117,7 @@ const OpportunityForm: React.FC = () => {
           <Controller
             name="description"
             control={control}
+            defaultValue=""
             render={({ field }) => (
               <textarea {...field} id="description" required className="mt-1 p-2 border rounded-md shadow-sm w-full" />
             )}
@@ -93,6 +130,7 @@ const OpportunityForm: React.FC = () => {
             <Controller
               name="estimatedValue"
               control={control}
+              defaultValue={0}
               render={({ field }) => (
                 <input
                   {...field}
@@ -112,6 +150,7 @@ const OpportunityForm: React.FC = () => {
             <Controller
               name="estimatedDate"
               control={control}
+              defaultValue=""
               render={({ field }) => (
                 <input
                   {...field}
@@ -129,22 +168,22 @@ const OpportunityForm: React.FC = () => {
             <div className="flex-1">
                 <label htmlFor="status" className="text-sm font-medium mt-2">Status</label>
                 <Controller
-                name="status"
-                defaultValue="open"
-                control={control}
-                render={({ field }) => (
+                  name="status"
+                  control={control}
+                  defaultValue="open"
+                  render={({ field }) => (
                     <select
-                    {...field}
-                    id="status"
-                    className="mt-1 p-2 border rounded-md shadow-sm w-full"
+                      {...field}
+                      id="status"
+                      className="mt-1 p-2 border rounded-md shadow-sm w-full"
                     >
-                    <option value="" disabled selected>Seleccione un estado</option>
-                    <option value="open">Open</option>
-                    <option value="review">Under Review</option>
-                    <option value="purchase">Purchase Order</option>
-                    <option value= "executed"> Executed</option>
+                      <option value="" disabled>Select status</option>
+                      <option value="opening">Open</option>
+                      <option value="review">Under Review</option>
+                      <option value="purchase">Purchase Order</option>
+                      <option value="done">Done</option>
                     </select>
-                )}
+                  )}
                 />
                 {errors.status && <p className="text-red-500">{errors.status.message}</p>}
             </div>
@@ -152,7 +191,7 @@ const OpportunityForm: React.FC = () => {
         <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded-md">Update Opportunity</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default OpportunityForm;
+export default OpportunityForm

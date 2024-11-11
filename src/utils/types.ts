@@ -34,6 +34,10 @@ export interface Opportunity {
     status: opportunitiesStatus;
 }
 
+export interface OpportunityRow extends Opportunity {
+    hasChanged?: boolean;
+}
+
 export type contactTypes = "call" | "email" | "face-to-face meeting"
 export type FollowUpStatus = "In Progress" | "Pending" | "In Review" | "Done"
 
