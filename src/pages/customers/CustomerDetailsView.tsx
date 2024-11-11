@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import CustomerOpportunitiesTable from "../../components/customers/CustomerOpportunitiesTable"
-import OpportunityFollowUpTable from "../../components/customers/OpportunityFollowUpTable"
+import OpportunityFollowUpTable from "../../components/opportunities/OpportunityFollowUpTable"
 import CustomerDetails from '../../components/customers/CustomerDetails';
 import { Opportunity } from '../../utils/types';
 import Main from '../../layout/Main'

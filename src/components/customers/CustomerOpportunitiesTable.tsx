@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useGetCustomerOpportunities } from '../../hooks/useGetCustomerOpportunities';
 import { Opportunity } from '../../utils/types'
+import { useNavigate } from 'react-router-dom';
 
 // function imports
 import { formatDate, handleViewAllButtonClickTS, handleSort, sortArray, paginateArray, getPages, handlePreviousPage, handleNextPage } from '../../utils/functions';
@@ -20,6 +21,7 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
     const { data: opportunities, error, isLoading } = useGetCustomerOpportunities(customerId)
 
     // hook implementation
+    const navigate = useNavigate();
     const [currentTablePage, setCurrentTablePage] = useState(1);
     const [rowsPerTablePage, setRowsPerTablePage] = useState(5);
     const [viewAllButton, setViewAllButton] = useState(false);
@@ -28,6 +30,11 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
     // conditional rendering
     if (isLoading) return <TableSkeleton rows={4} columns={6} />
     if (error) return <ErrorComponent message={`An error occurred while fetching the information. Contact technical support and show them this code: ${error.message}.`} />
+
+    const handleOpportunityClick = (opportunity: Opportunity) => {
+        onSelectOpportunity(opportunity);
+        navigate(`/opportunityDetails/${opportunity.id}`);
+    };
 
     // button view all / view less void implementation
     const handleViewAllButtonClick = (
@@ -150,8 +157,8 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
                                 return (
                                     <tr key={opportunity.id}>
                                         <td className="p-4 border-b border-slate-200 w-40 break-words">
-                                            <div className="flex flex-col">
-                                                <p className="text-sm font-semibold text-slate-700">
+                                            <div key={opportunity.id} className="flex flex-col">
+                                                <p className="text-sm font-semibold text-slate-700 cursor-pointer hover:text-blue-500" onClick={() => handleOpportunityClick(opportunity)}>
                                                     {opportunity.businessName}
                                                 </p>
                                                 <p className="text-sm text-slate-500">
