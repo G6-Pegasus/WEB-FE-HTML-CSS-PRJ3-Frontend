@@ -1,4 +1,3 @@
-import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useCreateOpportunity } from '../hooks/useCreateOpportunity';
 import { useGetCustomers } from '../hooks/useGetCustomers';
@@ -7,9 +6,8 @@ import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
 import ErrorComponent from '../components/common/ErrorComponent';
 import Loader from '../components/common/Loader';
-import { useNavigate } from 'react-router-dom';
 
-const CreateOpportunity: React.FC = () => {
+const CreateOpportunity = ({ onCancel } : { onCancel: () => void }) => {
     const { mutate: createOpportunity, isSuccess, isError } = useCreateOpportunity();
     const { data: customers = [], isLoading, isError: isCustomersError } = useGetCustomers();
     const { register, handleSubmit, control, formState: { errors } } = useForm<Opportunity>({
@@ -17,10 +15,9 @@ const CreateOpportunity: React.FC = () => {
             status: 'Opening',
         }
     });
-    const navigate = useNavigate();
 
     const onSubmit = (opportunity: Opportunity) => {
-        createOpportunity(opportunity);
+        createOpportunity({ ...opportunity, id: crypto.randomUUID() });
         if (isSuccess) Swal.fire("Created!", "Opportunity has been successfully created.", "success");
         if (isError) Swal.fire({
             icon: "error",
@@ -29,27 +26,10 @@ const CreateOpportunity: React.FC = () => {
         });
     };
 
-    const handleCancel = () => {
-        Swal.fire({
-            title: "Are you sure?",
-            text: "Any unsaved changes will be lost.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            confirmButtonText: "Yes, cancel",
-            cancelButtonText: "No, stay",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                navigate("/opportunities"); // Ruta a la que quieres redirigir en caso de cancelar
-            }
-        });
-    };
-
     if (isLoading) return <Loader />;
     if (isCustomersError) return <ErrorComponent message="An error occurred while fetching the information." />;
 
-    return (
-        <div className="container mx-auto p-6 max-w-lg bg-white shadow-lg rounded-lg">
+    return <div className="container mx-auto p-6 max-w-lg bg-white shadow-lg rounded-lg">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Create Opportunity</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 
@@ -157,7 +137,7 @@ const CreateOpportunity: React.FC = () => {
                     </button>
                     <button
                         type="button"
-                        onClick={handleCancel}
+                        onClick={onCancel}
                         className="bg-red-500 text-white font-bold py-2 px-4 rounded-md hover:bg-red-600"
                     >
                         Cancel
@@ -165,7 +145,6 @@ const CreateOpportunity: React.FC = () => {
                 </div>
             </form>
         </div>
-    );
 };
 
 export default CreateOpportunity;

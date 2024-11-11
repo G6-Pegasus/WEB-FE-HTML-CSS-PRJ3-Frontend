@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
-import { DataGrid, GridColDef, GridRowId, GridActionsCellItem, GridRowModesModel, GridRowModes } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowId, GridRowModel, GridActionsCellItem, GridRowModesModel, GridRowModes } from '@mui/x-data-grid';
 import { useGetCustomers } from '../../hooks/useGetCustomers';
 import { Customer, CustomerRow } from "../../utils/types";
 import { useUpdateCustomer } from '../../hooks/useUpdateCustomer';
@@ -42,10 +42,7 @@ function ClientTable() {
   };
 
   const handleToggleActive = (id: GridRowId, currentActive: boolean) => () => {
-    const updatedRows = dataRows.map((row) =>
-      row.id === id ? { ...row, active: !currentActive } : row
-    );
-    setDataRows(updatedRows);
+    setDataRows(dataRows.map((row) => row.id === id ? { ...row, active: !currentActive } : row));
     updateCustomer({ id: Number(id),  data: { active: !currentActive } });
     if (isSuccess) Swal.fire("Updated!", "Customer has been successfully updated.", "success");
     if (isUpdateError) Swal.fire({
@@ -55,16 +52,31 @@ function ClientTable() {
     });
   };
 
-  const processRowUpdate = (newRow: CustomerRow) => {
-    setDataRows(dataRows.map((row) => (row.id === newRow.id ? newRow : row)));
-    updateCustomer({ id: Number(newRow.id),  data: newRow });
-    if (isSuccess) Swal.fire("Updated!", "Customer has been successfully updated.", "success");
-    if (isUpdateError) Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Error updating customer. Please try again.",
+  const processRowUpdate = (newRow: GridRowModel, oldRow: GridRowModel) => {
+    if (!oldRow.active) {
+      return oldRow;
+    }
+    Swal.fire({
+        text: "Do you want to save this change?",
+        showCancelButton: true,
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            setDataRows(dataRows.map((row) => (row.id === newRow.id ? newRow as Customer : row)));
+            updateCustomer({ id: Number(newRow.id),  data: newRow as Customer });
+            if (isSuccess) Swal.fire("Updated!", "Customer has been successfully updated.", "success");
+            if (isUpdateError) Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Error updating customer. Please try again.",
+            });
+            return newRow;
+        } else {
+            return oldRow;
+        }
     });
-    return newRow;
+    return oldRow;
   };
 
   const columns: GridColDef[] = [

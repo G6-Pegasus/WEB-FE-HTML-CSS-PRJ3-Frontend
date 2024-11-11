@@ -5,7 +5,7 @@ import { OpportunityRow } from "../utils/types";
 export const useUpdateOpportunity = () => {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: (opportunity: OpportunityRow) => updateOpportunity(opportunity),
+        mutationFn: ({ id, data }: { id: string, data: Partial<OpportunityRow>}) => updateOpportunity(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["opportunities"] })
         },
