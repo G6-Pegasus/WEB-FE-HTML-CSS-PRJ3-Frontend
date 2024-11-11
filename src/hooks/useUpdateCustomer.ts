@@ -6,7 +6,7 @@ export const useUpdateCustomer = () => {
     const queryClient = useQueryClient()
     
     return useMutation({
-        mutationFn: (customer: CustomerRow) => updateCustomer(customer),
+        mutationFn: ({ id, data }: { id: number, data: Partial<CustomerRow> }) => updateCustomer(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["customers"] })
         },

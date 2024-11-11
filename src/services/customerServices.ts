@@ -16,9 +16,9 @@ export const addCustomer = async (customer: Customer) => {
     });
 };
 
-export const updateCustomer = async (customer: CustomerRow) => {
-    return await fetcher(`/customers/${customer.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(customer)
+export const updateCustomer = async (id: number, data: Partial<CustomerRow>) => {
+    return await fetcher(`/customers/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data)
     });
 };

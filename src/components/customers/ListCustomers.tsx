@@ -1,51 +1,71 @@
 import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
-import { DataGrid, GridColDef, GridRowModel } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowId, GridActionsCellItem, GridRowModesModel, GridRowModes } from '@mui/x-data-grid';
 import { useGetCustomers } from '../../hooks/useGetCustomers';
-import { Button } from "@mui/material";
 import { Customer, CustomerRow } from "../../utils/types";
-import { useUpdateCustomer } from '../../hooks/useUpdateCustomer'
+import { useUpdateCustomer } from '../../hooks/useUpdateCustomer';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import TableSkeleton from '../common/TableSkeleton';
 import ErrorComponent from '../common/ErrorComponent';
+import EditIcon from '@mui/icons-material/Edit';
+import InfoIcon from '@mui/icons-material/Info';
+import SaveIcon from '@mui/icons-material/Save';
+import ActiveIcon from '@mui/icons-material/Check'
+import CancelIcon from '@mui/icons-material/Close';
 
 function ClientTable() {
   const { data: rows = [], isLoading, isError } = useGetCustomers();
   const { mutate: updateCustomer, isSuccess, isError: isUpdateError } = useUpdateCustomer();
   const [dataRows, setDataRows] = useState<Customer[]>(rows);
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const navigate = useNavigate();
 
   useEffect(() => {
     setDataRows(rows);
   }, [rows]);
 
-  function handleUpdate(row: CustomerRow) {
-    updateCustomer(row);
-    if (isSuccess) Swal.fire("Updated!", "", "success");
-    if (isUpdateError) Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Something is wrong"
-    });
+  const goToClientInfo = (id: GridRowId) => () => {
+    navigate(`/customerDetails/${id}`)
   }
 
-  async function handleToggleActive(customerRow: CustomerRow, isActive: boolean) {
-    updateCustomer({ ...customerRow, active: !isActive });
-    if (isSuccess) {
-      Swal.fire("Updated!", "", "success");
-      setDataRows((prevRows: Customer[]) =>
-        prevRows.map((row) =>
-          row.id === customerRow.id ? { ...row, active: !row.active } : row
-        )
-      );
-    }
+  const handleEditClick = (id: GridRowId) => () => {
+    setRowModesModel((prev) => ({ ...prev, [id]: { mode: GridRowModes.Edit } }));
+  };
+
+  const handleSaveClick = (id: GridRowId) => () => {
+    setRowModesModel((prev) => ({ ...prev, [id]: { mode: GridRowModes.View } }));
+  };
+
+  const handleCancelClick = (id: GridRowId) => () => {
+    setRowModesModel((prev) => ({ ...prev, [id]: { mode: GridRowModes.View, ignoreModifications: true } }));
+  };
+
+  const handleToggleActive = (id: GridRowId, currentActive: boolean) => () => {
+    const updatedRows = dataRows.map((row) =>
+      row.id === id ? { ...row, active: !currentActive } : row
+    );
+    setDataRows(updatedRows);
+    updateCustomer({ id: Number(id),  data: { active: !currentActive } });
+    if (isSuccess) Swal.fire("Updated!", "Customer has been successfully updated.", "success");
     if (isUpdateError) Swal.fire({
       icon: "error",
       title: "Oops...",
-      text: "Something is wrong"
+      text: "Error updating customer. Please try again.",
     });
-  }
+  };
+
+  const processRowUpdate = (newRow: CustomerRow) => {
+    setDataRows(dataRows.map((row) => (row.id === newRow.id ? newRow : row)));
+    updateCustomer({ id: Number(newRow.id),  data: newRow });
+    if (isSuccess) Swal.fire("Updated!", "Customer has been successfully updated.", "success");
+    if (isUpdateError) Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Error updating customer. Please try again.",
+    });
+    return newRow;
+  };
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'NIT', width: 150, editable: true },
@@ -55,111 +75,81 @@ function ClientTable() {
     { field: 'country', headerName: 'Country', width: 120, editable: true },
     { field: 'phone', headerName: 'Phone', width: 150, editable: true },
     { field: 'corporateEmail', headerName: 'Email', width: 200, editable: true },
-    { field: 'active', headerName: 'Active', type: 'boolean', width: 100, editable: false },
     {
-      field: "update",
-      headerName: "Update",
-      width: 150,
+      field: 'active',
+      headerName: 'Active',
+      type: 'boolean',
+      width: 100,
       renderCell: (params) => (
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => handleUpdate(params.row)}
-          className="bg-teal-500 w-full text-white px-4 py-2 text-xs font-semibold hover:bg-teal-600 rounded-md"
-        >
-          Update
-        </Button>
+        <span className={`px-2 py-1 font-semibold rounded-md ${params.value ? 'text-green-800 bg-green-200' : 'text-red-800 bg-red-200'}`}>
+          {params.value ? 'Active' : 'Inactive'}
+        </span>
       ),
     },
     {
-      field: "toggleActive",
-      headerName: "Activate/Deactivate",
+      field: "actions",
+      type: 'actions',
+      headerName: "Actions",
       width: 150,
-      renderCell: (params) => (
-        <Button
-          variant="contained"
-          onClick={() => handleToggleActive(params.row, params.row.active)}
-          className={`w-full text-white px-4 py-2 text-xs font-semibold rounded-md ${
-            params.row.active ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
-          }`}
-        >
-          {params.row.active ? "Deactivate" : "Activate"}
-        </Button>
-      ),
-    },
+      getActions: ({ id }) => {
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+        const row = dataRows.find((r) => r.id === id);
+
+        if (isInEditMode) {
+          return [
+            <GridActionsCellItem
+              icon={<SaveIcon />}
+              label="Save"
+              onClick={handleSaveClick(id)}
+              color="primary"
+            />,
+            <GridActionsCellItem
+              icon={<CancelIcon />}
+              label="Cancel"
+              onClick={handleCancelClick(id)}
+              color="inherit"
+            />,
+          ];
+        }
+
+        return [
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            onClick={handleEditClick(id)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={<InfoIcon />}
+            label="Info"
+            onClick={goToClientInfo(id)}
+            color="info"
+          />,
+          <GridActionsCellItem
+            icon={row?.active ? <CancelIcon /> : <ActiveIcon />}
+            label={row?.active ? "Deactivate" : "Activate"}
+            onClick={handleToggleActive(id, row?.active ?? true)}
+            color={row?.active ? "error" : "success"}
+          />,
+        ];
+      }
+    }
   ];
 
-  const handleEditOption = (params: any) => {
-    if (['update', 'toggleActive', 'active', "__check__"].includes(params.field)) return;
-
-    Swal.fire({
-      text: "Do you want to edit this line? Press 'Cancel' to go to the customer page.",
-      showCancelButton: true
-    }).then(r => {
-      if (r.isDismissed) navigate(`/customerDetails/${params.row.id}`);
-    });
-  };
-
-  const processRowUpdate = (newRow: GridRowModel, oldRow: GridRowModel) => {
-    if (!oldRow.active) {
-      return oldRow;
-    }
-    return newRow;
-  };
-
-  if (isLoading) return <TableSkeleton rows={4} columns={7} />
-  if (isError) return <ErrorComponent message={`An error occurred while fetching the information. Contact technical support and show them this code: Error loading customers.`} />
+  if (isLoading) return <TableSkeleton rows={4} columns={7} />;
+  if (isError) return <ErrorComponent message="An error occurred while fetching the information." />;
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '80%',
-        '& .MuiDataGrid-root': {
-          backgroundColor: 'white',
-          fontSize: '0.875rem',
-        },
-        '& .MuiDataGrid-cell': {
-          padding: '8px',
-          borderBottom: '1px solid #e0e0e0',
-        },
-        '& .MuiDataGrid-columnHeaders': {
-          backgroundColor: '#f5f5f5',
-          color: '#374151',
-          borderBottom: '1px solid #e0e0e0',
-          fontWeight: 'bold',
-          fontSize: '0.875rem',
-        },
-        '& .MuiDataGrid-columnHeaderTitle': {
-          textOverflow: 'clip',
-          whiteSpace: 'normal',
-          lineHeight: '1.2',
-        },
-        '& .inactive-row': {
-          backgroundColor: '#fde2e2',
-          '&:hover': {
-            backgroundColor: '#fbb1b1',
-          },
-        },
-      }}
-      className="overflow-auto shadow-lg rounded-lg border border-slate-200"
-    >
+    <Box sx={{ height: 500, width: '100%' }}>
       <DataGrid
         rows={dataRows}
         columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 5,
-            },
-          },
-        }}
-        pageSizeOptions={[5]}
-        checkboxSelection
-        disableRowSelectionOnClick
-        onCellClick={handleEditOption}
-        getRowClassName={(params) => params.row.active ? '' : 'inactive-row'}
+        editMode="row"
+        rowModesModel={rowModesModel}
+        onRowModesModelChange={setRowModesModel}
         processRowUpdate={processRowUpdate}
+        pageSizeOptions={[5]}
+        disableRowSelectionOnClick
       />
     </Box>
   );
