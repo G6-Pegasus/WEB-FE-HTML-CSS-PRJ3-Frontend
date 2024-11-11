@@ -1,4 +1,4 @@
-import Main from '../../layout/Main'
+import Main from '../../layout/Main';
 import OpportunityTable from '../../components/opportunities/ListOpportunities';
 
 const OpportunitiesView = () => {
@@ -11,7 +11,9 @@ const OpportunitiesView = () => {
                 <OpportunityTable />
             </section>
         </section>
+      </section>
     </Main>
-}
+  );
+};
 
-export default OpportunitiesView
+export default OpportunitiesView;
