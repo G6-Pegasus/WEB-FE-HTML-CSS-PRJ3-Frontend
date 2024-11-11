@@ -22,7 +22,16 @@ const OpportunityForm: React.FC = () => {
   const { mutate: updateOpportunity ,isSuccess, isError: isUpdateError } = useUpdateOpportunity();
 
   console.log("Id", opportunity_id);
-
+  const allowedTransitions: { [key: string]: string[] } = {
+    open: ["review"],
+    review: ["purchase"],
+    purchase: ["done"],
+    done: [],
+    "": ["open"], 
+  }
+  const handleStatusChange = (currentStatus: string, newStatus: string) => {
+    return allowedTransitions[currentStatus]?.includes(newStatus);
+  };
   useEffect(() => {
     const fetchOpportunityData = async () => {
       if (opportunity_id) {
@@ -165,28 +174,37 @@ const OpportunityForm: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-col md:flex-row md:space-x-4 mb-4">
-            <div className="flex-1">
-                <label htmlFor="status" className="text-sm font-medium mt-2">Status</label>
-                <Controller
-                  name="status"
-                  control={control}
-                  defaultValue="open"
-                  render={({ field }) => (
-                    <select
-                      {...field}
-                      id="status"
-                      className="mt-1 p-2 border rounded-md shadow-sm w-full"
-                    >
-                      <option value="" disabled>Select status</option>
-                      <option value="opening">Open</option>
-                      <option value="review">Under Review</option>
-                      <option value="purchase">Purchase Order</option>
-                      <option value="done">Done</option>
-                    </select>
-                  )}
-                />
-                {errors.status && <p className="text-red-500">{errors.status.message}</p>}
-            </div>
+        <div className="flex-1">
+            <label htmlFor="status" className="text-sm font-medium mt-2">Status</label>
+            <Controller
+              name="status"
+              control={control}
+              defaultValue=""
+              render={({ field }) => (
+                <select
+                  {...field}
+                  id="status"
+                  className="mt-1 p-2 border rounded-md shadow-sm w-full"
+                  onChange={(e) => {
+                    const newStatus = e.target.value;
+                    const currentStatus = field.value;
+                    if (handleStatusChange(currentStatus, newStatus)) {
+                      field.onChange(newStatus)
+                    } else {
+                      Swal.fire("Transición no permitida", `No puedes cambiar el estado de ${currentStatus} a ${newStatus}.`, "error");
+                    }
+                  }}
+                >
+                  <option value="" disabled>Select status</option>
+                  <option value="open">Open</option>
+                  <option value="review">Under Review</option>
+                  <option value="purchase">Purchase Order</option>
+                  <option value="done">Done</option>
+                </select>
+              )}
+            />
+            {errors.status && <p className="text-red-500">{errors.status.message}</p>}
+          </div>
         </div>
         <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded-md">Update Opportunity</button>
       </form>
