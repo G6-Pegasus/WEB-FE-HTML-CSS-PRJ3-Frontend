@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { bussinesLines , opportunitiesStatus } from '../utils/types';
 import { useUpdateOpportunity} from '../hooks/useUpdateOpportunity';
-import { getOpportunityByID } from '../services/opportunityServices';
+import { getOpportunityDetails } from '../services/opportunityServices';
 import Swal from 'sweetalert2';
 
 interface OpportunityFormValues {
@@ -16,18 +16,17 @@ interface OpportunityFormValues {
   status: string
 }
 
-const OpportunityForm: React.FC = () => {
+const OpportunityForm = ({ onCancel } : { onCancel: () => void }) => {
   const { control, handleSubmit, setValue, formState: { errors } } = useForm<OpportunityFormValues>()
   const { opportunityId: opportunity_id } = useParams<{ opportunityId: string }>()
   const { mutate: updateOpportunity ,isSuccess, isError: isUpdateError } = useUpdateOpportunity()
 
-  console.log("Id", opportunity_id);
   const allowedTransitions: { [key: string]: string[] } = {
-    open: ["review"],
-    review: ["purchase"],
-    purchase: ["done"],
-    done: [],
-    "": ["open"], 
+    "Opening": ["Under study"],
+    "Under study": ["Purchase order"],
+    "Purchase order": ["Executed"],
+    "Executed": [],
+    "": ["Opening"], 
   }
   const handleStatusChange = (currentStatus: string, newStatus: string) => {
     return allowedTransitions[currentStatus]?.includes(newStatus)
@@ -35,7 +34,7 @@ const OpportunityForm: React.FC = () => {
   useEffect(() => {
     const fetchOpportunityData = async () => {
       if (opportunity_id) {
-        const opportunity = await getOpportunityByID(Number(opportunity_id))
+        const opportunity = await getOpportunityDetails(opportunity_id)
         if (opportunity) {
           setValue("businessName", opportunity.businessName)
           setValue("businessLine", opportunity.businessLine)
@@ -43,7 +42,6 @@ const OpportunityForm: React.FC = () => {
           setValue("estimatedValue", opportunity.estimatedBusinessValue)
           setValue("estimatedDate", opportunity.estimatedCompletionDate)
           setValue("status", opportunity.status)
-          console.log(opportunity)
         }
       }
     }
@@ -54,13 +52,14 @@ const OpportunityForm: React.FC = () => {
   const onSubmit = (data: OpportunityFormValues) => {
     updateOpportunity({
       id: opportunity_id || '',
-      businessName: data.businessName,
-      businessLine: data.businessLine as bussinesLines,
-      description: data.description,
-      status: data.status as opportunitiesStatus,
-      customerId: Number(data.client), 
-      estimatedBusinessValue:  data.estimatedValue, 
-      estimatedCompletionDate: data.estimatedDate
+      data: {
+        businessName: data.businessName,
+        businessLine: data.businessLine as bussinesLines,
+        description: data.description,
+        status: data.status as opportunitiesStatus, 
+        estimatedBusinessValue:  data.estimatedValue, 
+        estimatedCompletionDate: data.estimatedDate
+      }
     })
     if (isSuccess) {
       Swal.fire("Updated!", "", "success").then(() => {
@@ -74,8 +73,7 @@ const OpportunityForm: React.FC = () => {
     })
   }
 
-  return (
-    <div className="m-2">
+  return <div className="m-2">
       <form className="flex flex-col mb-4 w-full max-w-lg mx-auto" onSubmit={handleSubmit(onSubmit)}>
         <h1 className='font-bold text-2xl mb-4'>Update Opportunity</h1>
         <div className="flex flex-col md:flex-row md:space-x-4 mb-4">
@@ -111,10 +109,10 @@ const OpportunityForm: React.FC = () => {
                       className="mt-1 p-2 border rounded-md shadow-sm w-full"
                     >
                       <option value="" disabled>Select a line</option>
-                      <option value="outsourcing">Outsourcing Resources</option>
-                      <option value="web">Web Development</option>
-                      <option value="mobile">Mobile Development</option>
-                      <option value="consulting">IT Consulting</option>
+                      <option value="Outsourcing Resources">Outsourcing Resources</option>
+                      <option value="Web Development">Web Development</option>
+                      <option value="Mobile Development">Mobile Development</option>
+                      <option value="IT Consulting">IT Consulting</option>
                     </select>
                   )}
                 />
@@ -196,20 +194,33 @@ const OpportunityForm: React.FC = () => {
                   }}
                 >
                   <option value="" disabled>Select status</option>
-                  <option value="open">Open</option>
-                  <option value="review">Under Review</option>
-                  <option value="purchase">Purchase Order</option>
-                  <option value="done">Done</option>
+                  <option value="Opening">Opening</option>
+                  <option value="Under study">Under study</option>
+                  <option value="Purchase order">Purchase order</option>
+                  <option value="Executed">Executed</option>
                 </select>
               )}
             />
             {errors.status && <p className="text-red-500">{errors.status.message}</p>}
           </div>
         </div>
-        <button type="submit" className="mt-4 p-2 bg-blue-500 text-white rounded-md">Update Opportunity</button>
+        <div className="flex justify-center gap-5">
+          <button
+              type="submit"
+              className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600"
+          >
+              Update Opportunity
+          </button>
+          <button
+              type="button"
+              onClick={onCancel}
+              className="bg-red-500 text-white font-bold py-2 px-4 rounded-md hover:bg-red-600"
+          >
+              Cancel
+          </button>
+      </div>
       </form>
     </div>
-  )
 }
 
 export default OpportunityForm
