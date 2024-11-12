@@ -8,7 +8,6 @@ import CustomerDetailsView from "./pages/customers/CustomerDetailsView";
 import DashboardView from "./pages/dashboard/DashboardView";
 import OpportunitiesView from "./pages/opportunities/OpportunitiesView";
 import OpportunityDetailsView from "./pages/opportunities/OpportunityDetailsView";
-import UpdateOpportunity from './forms/UpdateOpportunity'
 import FollowUpsView from "./pages/followUps/FollowUpsView";
 import OpportunityFormView from "./pages/opportunities/OpportunityFormView";
 
