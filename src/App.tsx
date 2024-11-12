@@ -8,9 +8,8 @@ import CustomerDetailsView from "./pages/customers/CustomerDetailsView";
 import DashboardView from "./pages/dashboard/DashboardView";
 import OpportunitiesView from "./pages/opportunities/OpportunitiesView";
 import OpportunityDetailsView from "./pages/opportunities/OpportunityDetailsView";
-import UpdateOpportunity from './forms/UpdateOpportunity'
+import UpdateOpportunity from './forms/UpdateOpportunities'
 import FollowUpsView from "./pages/followUps/FollowUpsView";
-import OpportunityFormView from "./pages/opportunities/OpportunityFormView";
 
 const router = createBrowserRouter([
     // Dashboard
@@ -39,16 +38,12 @@ const router = createBrowserRouter([
         element: <OpportunitiesView />
     },
     {
-        path: "/createOpportunity",
-        element: <OpportunityFormView option="create" />
-    },
-    {
         path: "/opportunityDetails/:opportunityId",
         element: <OpportunityDetailsView />
     },
     {
         path: "/updateOpportunity/:opportunityId",
-        element: <OpportunityFormView option="update" />
+        element: <UpdateOpportunity />
     },      
 
     // Follow-Ups
