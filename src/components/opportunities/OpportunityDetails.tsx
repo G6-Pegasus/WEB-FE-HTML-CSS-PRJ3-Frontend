@@ -5,7 +5,7 @@ import { useGetOpportunityDetails } from '../../hooks/useGetOpportunityDetails';
 import { Opportunity } from '../../utils/types';
 
 interface OpportunityDetailsProps {
-    opportunityId: string;
+    opportunityId: number;
     onSelectOpportunity: (opportunity: Opportunity) => void;
 }
 
@@ -27,12 +27,14 @@ export default function OpportunityDetails({ opportunityId, onSelectOpportunity 
                 Opportunity Details
             </h2>
             <div className="text-slate-700 grid grid-cols-2 gap-x-6 gap-y-2">
+                <p className="mb-2"><strong>Opportunity ID:</strong> {opportunity.id}</p>
                 <p className="mb-2"><strong>Customer:</strong> {opportunity.customerId}</p>
                 <p className="mb-2"><strong>Name:</strong> {opportunity.businessName}</p>
                 <p className="mb-2"><strong>Business Line:</strong> {opportunity.businessLine}</p>
                 <p className="mb-2"><strong>Deadline:</strong> {opportunity.estimatedCompletionDate}</p>
                 <p className="mb-2"><strong>Estimated Value:</strong> {opportunity.estimatedBusinessValue}</p>
                 <p className="mb-2"><strong>Status:</strong> {opportunity.status}</p>
+                <p className="mb-2"><strong>Customer:</strong> {opportunity.customerId}</p>                
             </div> 
         </div>
     );
