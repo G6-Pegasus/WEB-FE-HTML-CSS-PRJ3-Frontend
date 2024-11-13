@@ -8,7 +8,6 @@ import CustomerDetailsView from "./pages/customers/CustomerDetailsView";
 import DashboardView from "./pages/dashboard/DashboardView";
 import OpportunitiesView from "./pages/opportunities/OpportunitiesView";
 import OpportunityDetailsView from "./pages/opportunities/OpportunityDetailsView";
-import UpdateOpportunity from './forms/UpdateOpportunities'
 import FollowUpsView from "./pages/followUps/FollowUpsView";
 
 const router = createBrowserRouter([

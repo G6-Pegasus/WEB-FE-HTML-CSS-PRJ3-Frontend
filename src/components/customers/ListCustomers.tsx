@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridRowId, GridActionsCellItem, GridRowModesModel, GridRowModes } from '@mui/x-data-grid';
 import { useGetCustomers } from '../../hooks/useGetCustomers';
-import { Customer, CustomerRow } from "../../utils/types";
+import { Customer } from "../../utils/types";
 import { useUpdateCustomer } from '../../hooks/useUpdateCustomer';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';

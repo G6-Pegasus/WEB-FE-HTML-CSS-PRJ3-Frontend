@@ -13,7 +13,7 @@ const OpportunityDetailsView = () => {
 
     return <Main>
         <section className="flex flex-col w-full justify-content-center items-center gap-5">
-            <OpportunityDetails opportunityId={Number(opportunityId)} onSelectOpportunity={setSelectedOpportunity}/>
+            <OpportunityDetails opportunityId={opportunityId} onSelectOpportunity={setSelectedOpportunity}/>
             {selectedOpportunity && <OpportunityFollowUpTable opportunity={selectedOpportunity} />}
         </section>
     </Main>
