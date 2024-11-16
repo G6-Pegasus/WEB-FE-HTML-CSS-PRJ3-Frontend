@@ -26,6 +26,4 @@ export const getOpportunityDetails = async (opportunityId: number) => {
     return await fetcher(`/opportunities/${opportunityId}`);
 }
 
-export const getOpportunities = async () => {
-    return await fetcher("/opportunities");
-};
+
