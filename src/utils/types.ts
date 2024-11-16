@@ -45,3 +45,7 @@ export interface FollowUp {
     description: string
     status: FollowUpStatus
 }
+
+export interface FollowUpRow extends FollowUp {
+    hasChanged?: boolean
+}

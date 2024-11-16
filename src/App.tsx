@@ -39,12 +39,8 @@ const router = createBrowserRouter([
     {
         path: "/opportunityDetails/:opportunityId",
         element: <OpportunityDetailsView />
-    },
-    {
-        path: "/updateOpportunity/:opportunityId",
-        element: <UpdateOpportunity />
-    },      
-
+    },    
+    
     // Follow-Ups
     {
         path: "/followUps",
