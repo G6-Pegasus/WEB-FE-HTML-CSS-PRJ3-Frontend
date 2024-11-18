@@ -23,6 +23,14 @@ const ComingSoon: React.FC = () => {
       <Typography variant="body1" sx={{ marginTop: 2, color: '#555' }}>
         We're working hard to bring you this page. Please check back later.
       </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ marginTop: 4 }}
+        onClick={() => (window.location.href = '/')}
+      >
+        Back to Home
+      </Button>
     </Container>
   );
 };
