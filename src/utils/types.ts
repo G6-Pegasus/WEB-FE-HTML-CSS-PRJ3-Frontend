@@ -34,14 +34,19 @@ export interface OpportunityRow extends Opportunity {
     hasChanged?: boolean
 }
 
-export type contactTypes = "call" | "email" | "meeting"
+export type contactTypes = "call" | "email" | "meeting" | "select"
 export type FollowUpStatus = "In Progress" | "Pending" | "In Review" | "Done"
 export interface FollowUp {
     id: string
     opportunityId: string
     contactType: contactTypes
     contactDate: string
+    contactClient:Contact[]
     commercialExecutive: string
     description: string
     status: FollowUpStatus
+}
+
+export interface FollowUpRow extends FollowUp {
+    hasChanged?: boolean
 }

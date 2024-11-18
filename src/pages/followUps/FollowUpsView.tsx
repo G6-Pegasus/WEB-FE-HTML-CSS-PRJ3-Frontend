@@ -1,24 +1,16 @@
-import  { useState } from 'react';
-import Main from '../../layout/Main';
-import UpdateDialog from '../../components/followUps/UpdateFollowDialog'; 
+import Main from '../../layout/Main'
+import FollowUpsTable from '../../components/followUps/ListfollowUps';
 
 const FollowUpsView = () => {
-  const [openDialog, setOpenDialog] = useState(false)
-  const openDialogHandler = () => setOpenDialog(true)
-  const closeDialogHandler = () => setOpenDialog(false)
-
-  return (
-    <Main>
-      <div>
-        <button 
-          onClick={openDialogHandler} 
-          className='mt-4 p-2 bg-blue-500 text-white rounded-md'>
-          Update FollowUp
-        </button>
-      </div>
-      <UpdateDialog open={openDialog} onClose={closeDialogHandler} />
+    return <Main>
+        <section className="flex justify-center">
+            <section className="w-[80vw] h-[80vh] flex flex-col gap-5 mt-5 justify-center items-center bg-white shadow-lg rounded-xl p-6 border border-gray-200">
+                <div className="w-full flex justify-between items-center pb-4 border-b border-gray-300">
+                    <h3 className="text-xl font-bold text-slate-700">Follow Ups List</h3>
+                </div>
+                <FollowUpsTable />
+            </section>
+        </section>
     </Main>
-  )
-}
-
-export default FollowUpsView;
+};
+export default FollowUpsView
