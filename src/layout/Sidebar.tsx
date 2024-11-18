@@ -12,7 +12,7 @@ function Sidebar() {
     <>
       {/* Sidebar for large screens */}
       <div
-        className={`hidden fixed z-20 md:flex flex-col bg-blue-800 text-white transition-all duration-300 ${
+        className={`hidden fixed z-20 md:flex flex-col bg-slate-800 text-white transition-all duration-300 ${
           isHovered ? "w-64 items-start" : "w-20 items-center"
         } h-full`}
         onMouseEnter={() => setIsHovered(true)}
