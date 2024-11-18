@@ -11,6 +11,6 @@ const FollowUpsView = () => {
                 <FollowUpsTable />
             </section>
         </section>
-  </Main>
+    </Main>
 };
 export default FollowUpsView

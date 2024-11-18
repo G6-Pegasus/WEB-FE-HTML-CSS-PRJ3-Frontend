@@ -15,22 +15,30 @@ import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useNavigate} from 'react-router-dom';
+import UpdateDialog from './UpdateFollowDialog';
 
 const statusOptions = ['Done', 'In Progress', 'Opening', 'Pending'];
 
 function FollowUpsTable() {
-    const { data: rows = [], isLoading, isError } = useGetFollowUps();
+    const { data: rows = [], isLoading, isError, refetch } = useGetFollowUps();
     const [dataRows, setDataRows] = useState<FollowUp[]>(rows);
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+    const [openDialog, setOpenDialog] = useState(false); 
+    const [selectedRowId, setSelectedRowId] = useState<GridRowId | null>(null); 
     const navigate = useNavigate();
-
     useEffect(() => {
-        setDataRows(rows);
-    }, [rows]);
+        setDataRows(rows)
+    }, [rows])
 
     const handleEditClick = (id: GridRowId) => () => {
-        navigate(`/updateFollowUps/${id}`);
-    };
+        setSelectedRowId(id)
+        setOpenDialog(true)
+    }
+    const handleDialogClose = () => {
+        setOpenDialog(false)
+        setSelectedRowId(null)
+        refetch()
+    }
 
     const handleSaveClick = (id: GridRowId) => () => {
         Swal.fire({
@@ -193,6 +201,13 @@ function FollowUpsTable() {
                     processRowUpdate={processRowUpdate}
                 />
             </Box>
+            {selectedRowId && (
+                <UpdateDialog
+                    open={openDialog}
+                    onClose={handleDialogClose}
+                    followUpId={selectedRowId?.toString() || ''}
+                />
+            )}
         </LocalizationProvider>
     );
 }

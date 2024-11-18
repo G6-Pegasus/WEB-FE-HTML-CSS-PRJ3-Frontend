@@ -10,6 +10,7 @@ import OpportunitiesView from "./pages/opportunities/OpportunitiesView";
 import OpportunityDetailsView from "./pages/opportunities/OpportunityDetailsView";
 import FollowUpsView from "./pages/followUps/FollowUpsView";
 
+
 const router = createBrowserRouter([
     // Dashboard
     {

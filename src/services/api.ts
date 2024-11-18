@@ -9,12 +9,11 @@ export const fetcher = async (endpoint: string, options: RequestInit = {}) => {
         ...(isFormData ? {} : { "Content-Type": "application/json" }),
         ...options.headers,
         },
-    });
-
+    })
     if (!response.ok) {
         const errorMessage = await response.text();
         throw new Error(errorMessage || "An error occurred");
     }
 
-    return response.json();
-};
+    return response.json()
+}
