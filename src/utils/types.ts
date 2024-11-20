@@ -50,3 +50,7 @@ export interface FollowUp {
 export interface FollowUpRow extends FollowUp {
     hasChanged?: boolean
 }
+
+export interface OpportunityDashboard extends Omit<Opportunity, "customerId"> {
+    customer: Customer | {}
+}
