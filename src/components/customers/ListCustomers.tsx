@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridRowId, GridActionsCellItem, GridRowModesModel, GridRowModes } from '@mui/x-data-grid';
 import { useGetCustomers } from '../../hooks/useGetCustomers';
-import { Customer } from "../../utils/types";
+import { Customer, CustomerRow } from "../../utils/types";
 import { useUpdateCustomer } from '../../hooks/useUpdateCustomer';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -55,7 +55,8 @@ function ClientTable() {
     });
   };
 
-  const processRowUpdate = (newRow: CustomerRow) => {
+  const processRowUpdate = (newRow: CustomerRow, oldRow: CustomerRow) => {
+    if (!newRow.active) return oldRow
     setDataRows(dataRows.map((row) => (row.id === newRow.id ? newRow : row)));
     updateCustomer({ id: Number(newRow.id),  data: newRow });
     if (isSuccess) Swal.fire("Updated!", "Customer has been successfully updated.", "success");
@@ -95,7 +96,7 @@ function ClientTable() {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
         const row = dataRows.find((r) => r.id === id);
 
-        if (isInEditMode) {
+        if (isInEditMode && row?.active) {
           return [
             <GridActionsCellItem
               icon={<SaveIcon />}

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {Dialog, DialogActions, DialogContent, DialogTitle, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, MenuItem } from "@mui/material";
 import Swal from "sweetalert2";
 import { useForm, Controller } from "react-hook-form";
-import { getFollowUpsByID } from "../../services/followUpServices";
 import { getOpportunityDetails } from "../../services/opportunityServices";
 import { getCustomerDetails } from "../../services/customerServices";
-import { contactTypes, FollowUpStatus, Customer, OpportunityRow, Contact } from "../../utils/types";
-import { useUpdateFollowUps } from "../../hooks/useUpdateFollowUps";
+import { contactTypes, FollowUpStatus, Customer, OpportunityRow, Contact, FollowUp } from "../../utils/types";
+import { useUpdateFollowUp } from "../../hooks/useUpdateFollowUp";
+import { useCreateFollowUp } from "../../hooks/useCreateFollowUp";
 
 interface FollowUpFormValues {
   contactType: contactTypes
@@ -17,67 +17,60 @@ interface FollowUpFormValues {
   status: FollowUpStatus
 }
 
-const UpdateDialog: React.FC<{ open: boolean; onClose: () => void; followUpId: string }> = ({open, onClose, followUpId,}) => {
+const UpdateDialog: React.FC<{ open: boolean; onClose: () => void; followUpData: Partial<FollowUp> ,option: "Create" | "Update" }> = ({open, onClose, followUpData, option }) => {
   const { control, handleSubmit, setValue } = useForm<FollowUpFormValues>({
     defaultValues: {
       contactClient: [],
+      status: "In Progress"
     },
   })
   const [contacts, setContacts] = useState<Contact[]>([])
   const [openContactDialog, setOpenContactDialog] = useState(false)
-  const { mutate: updateFollowUp, isSuccess, isError: isUpdateError } = useUpdateFollowUps()
+  const { mutate: sendFollowUp, isSuccess, isError: isSendError } = option === "Update" ? useUpdateFollowUp() : useCreateFollowUp()
 
   useEffect(() => {
     const fetchFollowUpData = async () => {
-      if (followUpId) {
-        let followUp = await getFollowUpsByID(followUpId)
-        followUp = followUp[0]
-        if (followUp) {
-          setValue("contactType", followUp.contactType)
-          setValue("contactDate", followUp.contactDate)
-          setValue("contactClient", followUp.contactClient || [])
-          setValue("commercialExecutive", followUp.commercialExecutive)
-          setValue("description", followUp.description)
-          setValue("status", followUp.status)
+        setValue("contactType", followUpData.contactType as contactTypes)
+        setValue("contactDate", followUpData.contactDate as string)
+        setValue("contactClient", followUpData.contactClient || [])
+        setValue("commercialExecutive", followUpData.commercialExecutive as string)
+        setValue("description", followUpData.description as string)
+        setValue("status", followUpData.status as FollowUpStatus)
 
-          const opportunityData: OpportunityRow = await getOpportunityDetails(Number(followUp.opportunityId))
-          const customerId = opportunityData.customerId
-          const customerData: Customer = await getCustomerDetails(customerId)
-          setContacts(customerData.contacts)
-        }
-      }
+        const opportunityData: OpportunityRow = await getOpportunityDetails(followUpData.opportunityId as string)
+        const customerId = opportunityData.customerId
+        const customerData: Customer = await getCustomerDetails(customerId)
+        setContacts(customerData.contacts)
     }
     fetchFollowUpData()
-  }, [followUpId, setValue])
+  }, [followUpData, setValue])
 
-  useEffect(() => {
-    if (isSuccess) {
-      Swal.fire({
-        icon: "success",
-        title: "Updated!",
-        text: "Updated successfully.",
-        showConfirmButton: false,
-        timer:1500,
-        willClose: () => {onClose()},
-      })
-    }
-    if (isUpdateError) {
-      Swal.fire({
-        icon: "error",
-        title: "Update Failed",
-        text: "Something went wrong while updating",
-        showConfirmButton: true,
-        willClose: () => onClose(),
-      })
-    }
-  }, [isSuccess, isUpdateError, onClose])
+  if (isSuccess) {
+    Swal.fire({
+      icon: "success",
+      title: `${option}d!`,
+      text: `${option} successfully.`,
+      showConfirmButton: false,
+      timer: 1500,
+      willClose: () => {onClose()},
+    })
+  }
+  if (isSendError) {
+    Swal.fire({
+      icon: "error",
+      title: `${option} failed`,
+      text: "Something went wrong while updating",
+      showConfirmButton: true,
+      willClose: () => onClose(),
+    })
+  }
 
   const onSubmit = (data: FollowUpFormValues) => {
-    if (!followUpId) {
+    if (!followUpData) {
       Swal.fire({
         icon: "error",
         title: "Missing ID",
-        text: "Follow-up ID is missing. Unable to update.",
+        text: `Follow-up ID is missing. Unable to ${option.toLowerCase()}.`,
         showConfirmButton: true,
         willClose: () => onClose(),
       })
@@ -93,9 +86,9 @@ const UpdateDialog: React.FC<{ open: boolean; onClose: () => void; followUpId: s
       })
       return
     }
-    updateFollowUp({
-      id: followUpId,
-      opportunityId: followUpId,
+    sendFollowUp({
+      id: followUpData.id as string,
+      opportunityId: followUpData.opportunityId as string,
       contactType: data.contactType,
       contactDate: data.contactDate,
       contactClient: data.contactClient,
@@ -116,20 +109,26 @@ const UpdateDialog: React.FC<{ open: boolean; onClose: () => void; followUpId: s
         <DialogTitle>Update Follow-Up</DialogTitle>
         <div className="my-1">
           <DialogContent sx={{ maxHeight: "60vh", overflowY: "auto" }}>
-            <Controller
-              name="contactType"
-              control={control}
-              defaultValue="select"
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label="Contact Type"
-                  variant="outlined"
-                  sx={{ marginBottom: 2 }}
-                />
-              )}
-            />
+          <Controller
+            name="contactType"
+            control={control}
+            defaultValue="call"
+            render={({ field }) => (
+              <TextField
+                {...field}
+                select
+                fullWidth
+                label="Contact Type"
+                variant="outlined"
+                sx={{ marginBottom: 2 }}
+              >
+                {/* Opciones del select */}
+                <MenuItem value="call">Call</MenuItem>
+                <MenuItem value="email">Email</MenuItem>
+                <MenuItem value="meeting">Meeting</MenuItem>
+              </TextField>
+            )}
+          />
             <Controller
               name="contactDate"
               control={control}
@@ -187,7 +186,7 @@ const UpdateDialog: React.FC<{ open: boolean; onClose: () => void; followUpId: s
         </div>
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit"> Update</Button>
+          <Button type="submit"> {option}</Button>
         </DialogActions>
       </form>
       <Dialog open={openContactDialog} onClose={handleContactDialogClose} maxWidth="sm" fullWidth>

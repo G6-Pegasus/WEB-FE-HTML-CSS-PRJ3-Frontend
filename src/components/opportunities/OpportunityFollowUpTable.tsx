@@ -1,5 +1,5 @@
 // hook import
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGetOpportunityFollowUps } from '../../hooks/useGetOpportunityFollowUps';
 import { Opportunity, FollowUp } from '../../utils/types'
 
@@ -8,12 +8,20 @@ import { formatDate, handleViewAllButtonClickTS, handleSort, sortArray, paginate
 import { differenceInMonths } from 'date-fns';
 import TableSkeleton from '../common/TableSkeleton';
 import ErrorComponent from '../common/ErrorComponent';
+import Swal from 'sweetalert2';
+import { useDeleteFollowUp } from '../../hooks/useDeleteFollowUp';
+import UpdateDialog from '../followUps/FollowUpDialog';
 
 interface OpportunityFollowUpTableProps {
     opportunity: Opportunity;
 }
 
 const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps) => {
+    const [selectedRow, setSelectedRow] = useState<Partial<FollowUp>>({})
+    const [openDialog, setOpenDialog] = useState(false);
+    const [optionMethod, setOptionMethod] = useState<"Create" | "Update">("Create")
+    const { mutate: deleteFollowUp, isSuccess: isDeleteSuccess, isError: isDeleteError } = useDeleteFollowUp()
+
     // hook implementation
     const [currentTablePage, setcurrentTablePage] = useState(1);
     const [rowsPerTablePage, setRowsPerTablePage] = useState(5);
@@ -21,7 +29,7 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
 
     // this will get the sub-array followUpSteps from the given opportunity
-    const { data: opportunityFollowUps, error, isLoading } = useGetOpportunityFollowUps(opportunity.id)
+    const { data: opportunityFollowUps, error, isLoading, refetch } = useGetOpportunityFollowUps(opportunity.id)
 
     // conditional rendering
     if (isLoading) return <TableSkeleton rows={4} columns={6} />
@@ -39,11 +47,78 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
     };
     
     const sortedOpportunityFollowUpSteps: FollowUp[] = sortArray(opportunityFollowUps || [], sortConfig);
-    const totalPages: number = getPages(sortedOpportunityFollowUpSteps, rowsPerTablePage);
-    const currentRows: FollowUp[] = paginateArray(sortedOpportunityFollowUpSteps, rowsPerTablePage, currentTablePage);
+    const numberOfPages: number = getPages(sortedOpportunityFollowUpSteps, rowsPerTablePage);
+    const paginatedRows: FollowUp[] = paginateArray(sortedOpportunityFollowUpSteps, rowsPerTablePage, currentTablePage)
     
+    const [totalPages, setTotalPages] = useState<number>(numberOfPages)
+    const [currentRows, setCurrentRows] = useState<FollowUp[]>(paginatedRows)
+
+    useEffect(() => {
+        const sortedOpportunityFollowUpSteps: FollowUp[] = sortArray(opportunityFollowUps || [], sortConfig);
+        const numberOfPages: number = getPages(sortedOpportunityFollowUpSteps, rowsPerTablePage);
+        const paginatedRows: FollowUp[] = paginateArray(sortedOpportunityFollowUpSteps, rowsPerTablePage, currentTablePage)
+        
+        setTotalPages(numberOfPages)
+        setCurrentRows(paginatedRows)
+    }, [opportunityFollowUps])
+
+    const handleDeleteClick = (row: FollowUp) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will remove the opportunity from the list.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            confirmButtonText: "Delete",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteFollowUp(row.id)
+                setSelectedRow(row)
+            }
+        })
+        ;
+    };
+
+    const handleEditClick = (row: FollowUp) => {
+        setOptionMethod("Update")
+        setSelectedRow(row)
+        setOpenDialog(true)
+    }
+
+    const handleCreateClick = () => {
+        setOptionMethod("Create")
+        setSelectedRow({ id: crypto.randomUUID(), opportunityId: opportunity.id, status: "In Progress" })
+        setOpenDialog(true)
+    }
+
+    if (isDeleteSuccess) {
+        setCurrentRows(rows => rows.filter(row => row.id !== selectedRow.id))
+        setSelectedRow({})
+        Swal.fire("Deleted!", "The follow-up has been removed.", "success");
+    }
+    if (isDeleteError) {
+        setSelectedRow({})
+        Swal.fire("ERROR!", "The entry could not be properly deleted.", "warning");
+    }
+
+    const handleDialogClose = () => {
+        setOpenDialog(false)
+        setSelectedRow({})
+        refetch()
+    }
+
     return (
         <div className="w-full max-h-96">
+            {selectedRow && openDialog && (
+                <UpdateDialog
+                    open={openDialog}
+                    onClose={handleDialogClose}
+                    followUpData={selectedRow}
+                    option={optionMethod}
+                />
+            )}
+
             <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
                 <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
                     <div className="flex items-center justify-between ">
@@ -57,11 +132,11 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                             type="button" onClick={() => handleViewAllButtonClick(sortedOpportunityFollowUpSteps, viewAllButton, setRowsPerTablePage, setcurrentTablePage, setViewAllButton)} disabled={sortedOpportunityFollowUpSteps.length <= rowsPerTablePage && !viewAllButton}>
                                 {viewAllButton ? 'View Less' : 'View All'}
                             </button>
-                            <button
+                            <button onClick={handleCreateClick}
                             className="flex select-none items-center gap-2 rounded bg-slate-800 py-2.5 px-4 text-xs font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                             type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" stroke-width="2" className="w-4 h-4">
-                                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" strokeWidth="2" className="w-4 h-4">
+                                    <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
                                 Add Follow-Up Task
                             </button>
@@ -77,9 +152,9 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                         Description {sortConfig?.key === 'description' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        <path strokeLinecap="round" strokeLinejoin="round"
                                         d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                                     </svg>
                                     </p>
@@ -89,9 +164,9 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Commercial Executive {sortConfig?.key === 'commercialExecutive' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        <path strokeLinecap="round" strokeLinejoin="round"
                                         d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                                     </svg>
                                     </p>
@@ -101,9 +176,9 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Status {sortConfig?.key === 'status' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        <path strokeLinecap="round" strokeLinejoin="round"
                                         d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                                     </svg>
                                     </p>
@@ -113,9 +188,9 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500 max-w-xs break-words">
                                     Contact Date {sortConfig?.key === 'contactDate' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        <path strokeLinecap="round" strokeLinejoin="round"
                                         d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                                     </svg>
                                     </p>
@@ -125,9 +200,9 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500 max-w-xs break-words">
                                     Contact Type {sortConfig?.key === 'contactType' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        <path strokeLinecap="round" strokeLinejoin="round"
                                         d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                                     </svg>
                                     </p>
@@ -185,7 +260,7 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                             </div>                                    
                                         </td>
                                         <td className="p-4 border-b border-slate-200">                                            
-                                            <button
+                                            <button onClick={() => handleEditClick(followUpStep)}
                                             className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                                             type="button">
                                                 <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
@@ -197,12 +272,12 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                                     </svg>
                                                 </span>
                                             </button>
-                                            <button
+                                            <button onClick={() => handleDeleteClick(followUpStep)}
                                             className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                                             type="button">
                                                 <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="w-4 h-4">
+                                                        <path strokeLinecap="round" strokeLinejoin="round"
                                                             d="M6 18L18 18M6 6L18 6M9 6L9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4L15 6M10 11L10 17M14 11L14 17">
                                                         </path>
                                                     </svg>

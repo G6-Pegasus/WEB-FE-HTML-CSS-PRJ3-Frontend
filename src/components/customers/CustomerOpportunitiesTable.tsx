@@ -67,11 +67,11 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
                             type="button" onClick={() => handleViewAllButtonClick(clientOpportunities, viewAllButton, setRowsPerTablePage, setCurrentTablePage, setViewAllButton)} disabled={clientOpportunities.length <= rowsPerTablePage && !viewAllButton}>
                                 {viewAllButton ? 'View Less' : 'View All'}
                             </button>
-                            <button
+                            <button onClick={() => navigate('/createOpportunity')}
                             className="flex select-none items-center gap-2 rounded bg-slate-800 py-2.5 px-4 text-xs font-semibold text-white shadow-md shadow-slate-900/10 transition-all hover:shadow-lg hover:shadow-slate-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                             type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" stroke-width="2" className="w-4 h-4">
-                                    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" strokeWidth="2" className="w-4 h-4">
+                                    <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
                                 Add Opportunity
                             </button>
@@ -87,9 +87,9 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                         Opportunity {sortConfig?.key === 'businessName' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        <path strokeLinecap="round" strokeLinejoin="round"
                                         d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                                     </svg>
                                     </p>
@@ -99,9 +99,9 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Description {sortConfig?.key === 'opportunityDescription' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        <path strokeLinecap="round" strokeLinejoin="round"
                                         d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                                     </svg>
                                     </p>
@@ -111,9 +111,9 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Status {sortConfig?.key === 'status' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        <path strokeLinecap="round" strokeLinejoin="round"
                                         d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                                     </svg>
                                     </p>
@@ -123,9 +123,9 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500 max-w-xs break-words">
                                     Estimated Closing Date {sortConfig?.key === 'estimatedCompletionDate' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        <path strokeLinecap="round" strokeLinejoin="round"
                                         d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                                     </svg>
                                     </p>
@@ -135,9 +135,9 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
                                     <p
                                     className="flex items-center justify-between gap-2 font-sans text-sm font-normal leading-none text-slate-500">
                                     Estimated Cost {sortConfig?.key === 'estimatedValue' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
                                         stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                        <path strokeLinecap="round" strokeLinejoin="round"
                                         d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
                                     </svg>
                                     </p>
@@ -220,8 +220,8 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
                                             className="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-slate-900 transition-all hover:bg-slate-900/10 active:bg-slate-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                                             type="button">
                                                 <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" className="w-4 h-4">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" className="w-4 h-4">
+                                                        <path strokeLinecap="round" strokeLinejoin="round"
                                                             d="M6 18L18 18M6 6L18 6M9 6L9 4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4L15 6M10 11L10 17M14 11L14 17">
                                                         </path>
                                                     </svg>

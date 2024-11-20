@@ -1,11 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateFollowUp } from "../services/followUpServices";
-import { FollowUpRow } from "../utils/types";
+import { deleteFollowUp } from "../services/followUpServices";
 
-export const useUpdateFollowUps = () => {
+export const useDeleteFollowUp = () => {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: (FollowUp: FollowUpRow) => updateFollowUp(FollowUp),
+        mutationFn: (followUpId: string) => deleteFollowUp(followUpId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["followUps"] })
         },

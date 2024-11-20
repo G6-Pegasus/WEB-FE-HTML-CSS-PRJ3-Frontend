@@ -3,6 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { useCreateCustomer } from '../hooks/useCreateCustomer';
 import { Customer } from '../utils/types';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const countriesList = [
   { code: 'AR', name: 'Argentina' },
@@ -17,16 +18,23 @@ const CreateClient: React.FC = () => {
   const { mutate: createCustomer, isSuccess, isError } = useCreateCustomer();
   const { register, handleSubmit, control, formState: { errors } } = useForm<Customer>();
   const { fields, append, remove } = useFieldArray({ control, name: 'contacts' });
+  const navigate = useNavigate()
   
   const onSubmit = (customer: Customer) => {
     createCustomer(customer);
-    if (isSuccess) Swal.fire("Created!", "Customer has been successfully created.", "success");
-    if (isError) Swal.fire({
+  };
+
+  if (isSuccess) {
+    Swal.fire("Created!", "Customer has been successfully created.", "success")
+        .then(() => navigate("/customers"))
+  }
+  if (isError) {
+    Swal.fire({
       icon: "error",
       title: "Oops...",
       text: "Error creating customer. Please try again.",
-    });
-  };
+    }).then(() => navigate("/customers"))
+  }
 
   return (
     <div className="p-6 bg-white rounded-xl shadow-lg border border-gray-200 max-w-5xl mx-auto mt-8">
@@ -183,9 +191,6 @@ const CreateClient: React.FC = () => {
             </button>
         </div>
       </form>
-      
-      {isSuccess && <p className="text-green-500 text-center mt-4">Client created successfully!</p>}
-      {isError && <p className="text-red-500 text-center mt-4">Error creating client. Please try again.</p>}
     </div>
   );
 };
