@@ -19,7 +19,7 @@ export interface CustomerRow extends Customer {
 }
 
 export type bussinesLines = "outsourcing resources" | "web development" | "mobile development" | "IT Consultancy"
-export type opportunitiesStatus = "Opening" | "Under study" | "Purchase order" | "Executed"
+export type opportunitiesStatus = "Opening" | "Under study" | "Pending" | "Done"
 export interface Opportunity {
     id: string
     customerId: number
