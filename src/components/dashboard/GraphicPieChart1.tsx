@@ -22,9 +22,9 @@ const OpportunitiesByStatusChart = () => {
     labels: chartLabels,
     datasets: [
       {
-        label: "Oportunidades por Estado",
+        label: "Opportunities in this state",
         data: chartValues,
-        backgroundColor: ["#FF5733", "#33FF57", "#3357FF", "#FF33A1"], 
+        backgroundColor: ["#447842", "#4d62b1", "#6b3d9f", "#fc9445"], 
       },
     ],
   }
