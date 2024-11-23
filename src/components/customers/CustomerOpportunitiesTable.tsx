@@ -175,10 +175,10 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
                                         </td>                                
                                         <td className="p-4 border-b border-slate-200 w-40 break-words">
                                             <div className={`border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${
-                                            opportunity.status === 'Executed' ? 'text-green-900 bg-green-500/20' :
+                                            opportunity.status === 'Done' ? 'text-green-900 bg-green-500/20' :
                                             opportunity.status === 'Under study' ? 'text-blue-900 bg-blue-500/20' :
-                                            opportunity.status === 'Purchase order' ? 'text-purple-900 bg-purple-500/20' :
-                                            opportunity.status === 'Opening' ? 'text-yellow-900 bg-yellow-500/20' :
+                                            opportunity.status === 'Opening' ? 'text-purple-900 bg-purple-500/20' :
+                                            opportunity.status === 'Pending' ? 'text-yellow-900 bg-yellow-500/20' :
                                             ''}`}>
                                                 {opportunity.status}
                                             </div>                                    
