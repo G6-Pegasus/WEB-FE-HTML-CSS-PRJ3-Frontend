@@ -54,7 +54,7 @@ const ClientOpportunitiesTable = ({ customerId, onSelectOpportunity }: ClientOpp
 
     // this is the return statement
     return (
-        <div className="w-full max-h-80">
+        <div className="w-full max-h-80 mb-2">
             <div className="relative flex flex-col w-full h-auto text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
                 <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
                     <div className="flex items-center justify-between ">

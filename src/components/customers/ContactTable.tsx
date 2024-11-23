@@ -40,7 +40,7 @@ const CustomerContactsTable = ({ contacts }: CustomerContactsTableProps) => {
   };
 
   return (
-    <div className="w-full max-h-80">
+    <div className="w-full max-h-50 overflow-hidden">
       <div className="relative flex flex-col w-full h-auto text-slate-700 bg-white shadow-md rounded-xl">
         <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none">
           <div className="flex items-center justify-between">
@@ -56,7 +56,7 @@ const CustomerContactsTable = ({ contacts }: CustomerContactsTableProps) => {
             </div>
           </div>
         </div>
-        <TableContainer component={Paper} className="p-0 max-w-full overflow-y-auto max-h-96 shadow-none">
+        <TableContainer component={Paper} className="p-0 max-w-full overflow-y-auto shadow-none">
           <Table className="w-full mt-4 table-auto">
             <TableHead className="sticky top-0 bg-slate-50 z-10">
               <TableRow>

@@ -1,5 +1,5 @@
 // hook import
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useGetOpportunityFollowUps } from '../../hooks/useGetOpportunityFollowUps';
 import { Opportunity, FollowUp } from '../../utils/types'
 
@@ -47,20 +47,8 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
     };
     
     const sortedOpportunityFollowUpSteps: FollowUp[] = sortArray(opportunityFollowUps || [], sortConfig);
-    const numberOfPages: number = getPages(sortedOpportunityFollowUpSteps, rowsPerTablePage);
-    const paginatedRows: FollowUp[] = paginateArray(sortedOpportunityFollowUpSteps, rowsPerTablePage, currentTablePage)
-    
-    const [totalPages, setTotalPages] = useState<number>(numberOfPages)
-    const [currentRows, setCurrentRows] = useState<FollowUp[]>(paginatedRows)
-
-    useEffect(() => {
-        const sortedOpportunityFollowUpSteps: FollowUp[] = sortArray(opportunityFollowUps || [], sortConfig);
-        const numberOfPages: number = getPages(sortedOpportunityFollowUpSteps, rowsPerTablePage);
-        const paginatedRows: FollowUp[] = paginateArray(sortedOpportunityFollowUpSteps, rowsPerTablePage, currentTablePage)
-        
-        setTotalPages(numberOfPages)
-        setCurrentRows(paginatedRows)
-    }, [opportunityFollowUps])
+    const totalPages: number = getPages(sortedOpportunityFollowUpSteps, rowsPerTablePage);
+    const currentRows: FollowUp[] = paginateArray(sortedOpportunityFollowUpSteps, rowsPerTablePage, currentTablePage)
 
     const handleDeleteClick = (row: FollowUp) => {
         Swal.fire({
@@ -93,12 +81,10 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
     }
 
     if (isDeleteSuccess) {
-        setCurrentRows(rows => rows.filter(row => row.id !== selectedRow.id))
-        setSelectedRow({})
         Swal.fire("Deleted!", "The follow-up has been removed.", "success");
+        refetch()
     }
     if (isDeleteError) {
-        setSelectedRow({})
         Swal.fire("ERROR!", "The entry could not be properly deleted.", "warning");
     }
 
@@ -119,7 +105,7 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                 />
             )}
 
-            <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
+            <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border mt-4">
                 <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
                     <div className="flex items-center justify-between ">
                         <div>
