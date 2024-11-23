@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DataGrid, GridColDef, GridRowId, GridActionsCellItem, GridRowModesModel, GridRowModes } from '@mui/x-data-grid';
 import { useGetCustomers } from '../../hooks/useGetCustomers';
-import { Customer, CustomerRow } from "../../utils/types";
+import { CustomerRow } from "../../utils/types";
 import { useUpdateCustomer } from '../../hooks/useUpdateCustomer';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -17,13 +17,8 @@ import CancelIcon from '@mui/icons-material/Close';
 function ClientTable() {
   const { data: rows = [], isLoading, isError } = useGetCustomers();
   const { mutate: updateCustomer, isSuccess, isError: isUpdateError } = useUpdateCustomer();
-  const [dataRows, setDataRows] = useState<Customer[]>(rows);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setDataRows(rows);
-  }, [rows]);
 
   const goToClientInfo = (id: GridRowId) => () => {
     navigate(`/customerDetails/${id}`)
@@ -42,10 +37,6 @@ function ClientTable() {
   };
 
   const handleToggleActive = (id: GridRowId, currentActive: boolean) => () => {
-    const updatedRows = dataRows.map((row) =>
-      row.id === id ? { ...row, active: !currentActive } : row
-    );
-    setDataRows(updatedRows);
     updateCustomer({ id: Number(id),  data: { active: !currentActive } });
     if (isSuccess) Swal.fire("Updated!", "Customer has been successfully updated.", "success");
     if (isUpdateError) Swal.fire({
@@ -57,7 +48,6 @@ function ClientTable() {
 
   const processRowUpdate = (newRow: CustomerRow, oldRow: CustomerRow) => {
     if (!newRow.active) return oldRow
-    setDataRows(dataRows.map((row) => (row.id === newRow.id ? newRow : row)));
     updateCustomer({ id: Number(newRow.id),  data: newRow });
     if (isSuccess) Swal.fire("Updated!", "Customer has been successfully updated.", "success");
     if (isUpdateError) Swal.fire({
@@ -94,7 +84,7 @@ function ClientTable() {
       width: 150,
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-        const row = dataRows.find((r) => r.id === id);
+        const row = rows.find((r) => r.id === id);
 
         if (isInEditMode && row?.active) {
           return [
@@ -141,9 +131,9 @@ function ClientTable() {
   if (isError) return <ErrorComponent message="An error occurred while fetching the information." />;
 
   return (
-    <Box sx={{ height: 500, width: '100%' }}>
+    <Box sx={{ height: '85%', width: '100%' }}>
       <DataGrid
-        rows={dataRows}
+        rows={rows}
         columns={columns}
         editMode="row"
         rowModesModel={rowModesModel}

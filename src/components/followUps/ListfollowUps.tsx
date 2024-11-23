@@ -1,8 +1,7 @@
 import Box from '@mui/material/Box';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DataGrid, GridColDef, GridRowModel, GridRowModesModel } from '@mui/x-data-grid';
 import { useGetFollowUps } from '../../hooks/useGetOpportunityFollowUps';
-import { FollowUp } from "../../utils/types";
 import TableSkeleton from '../common/TableSkeleton';
 import ErrorComponent from '../common/ErrorComponent';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -15,16 +14,11 @@ const statusOptions = ['Done', 'In Progress', 'Opening', 'Pending'];
 
 function FollowUpsTable() {
     const { data: rows = [], isLoading, isError } = useGetFollowUps();
-    const [dataRows, setDataRows] = useState<FollowUp[]>(rows);
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
     const navigate = useNavigate()
 
-    useEffect(() => {
-        setDataRows(rows)
-    }, [rows])
-
     const handleClick = (row: GridRowModel) => {
-        navigate(`/opportunityDetails/${row.id}`)
+        navigate(`/opportunityDetails/${row.row.opportunityId}`)
     }
 
     const columns: GridColDef[] = [
@@ -72,9 +66,9 @@ function FollowUpsTable() {
     if (isError) return <ErrorComponent message="An error occurred while fetching the information. Contact technical support and show them this code: Error loading..." />;
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Box sx={{ height: 500, width: '100%' }}>
+            <Box sx={{ height: '85%', width: '100%' }}>
                 <DataGrid
-                    rows={dataRows}
+                    rows={rows}
                     columns={columns}
                     onCellClick={handleClick}
                     rowModesModel={rowModesModel}

@@ -1,11 +1,11 @@
 import Main from '../../layout/Main'
-import ComingSoon from '../../components/common/ComingSoon';
 import { useGetOpportunities } from '../../hooks/useGetOpportunities';
 import Loader from '../../components/common/Loader';
 import ErrorComponent from '../../components/common/ErrorComponent';
 import { useGetCustomers } from '../../hooks/useGetCustomers';
 import { OpportunityDashboard } from '../../utils/types';
 import Graphic2 from "../../components/dashboard/GraphicPieChart1";
+import BusinessLinesPieChart from '../../components/dashboard/BusinessLinesPieChart';
 
 const DashboardView = () => {
     const { data: opportunities = [], isLoading: isOpportunityLoading, isError: isOpportunityError } = useGetOpportunities();
@@ -22,8 +22,10 @@ const DashboardView = () => {
     return <Main>
         {(isOpportunityLoading || isCustomerLoading) && <Loader />}
         {(isOpportunityError || isCustomerError) && <ErrorComponent message="An error occurred while fetching the information. Contact technical support and show them this code: Error loading..." />}
-        <Graphic2 />
-        <ComingSoon />
+        {data && <>
+            <Graphic2 />
+            <BusinessLinesPieChart />  
+        </>}
     </Main>
 };
   

@@ -1,8 +1,7 @@
 import Box from '@mui/material/Box';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DataGrid, GridColDef, GridRowId, GridActionsCellItem, GridRowModesModel } from '@mui/x-data-grid';
 import { useGetOpportunities } from '../../hooks/useGetCustomerOpportunities';
-import { Opportunity } from "../../utils/types";
 import Swal from 'sweetalert2';
 import TableSkeleton from '../common/TableSkeleton';
 import ErrorComponent from '../common/ErrorComponent';
@@ -19,16 +18,10 @@ import { useDeleteOpportunity } from '../../hooks/useDeleteOpportunity';
 const statusOptions = ['Done', 'Under study', 'Opening', 'Pending'];
 
 function OpportunityTable() {
-    const { data: rows = [], isLoading, isError } = useGetOpportunities();
-    const [dataRows, setDataRows] = useState<Opportunity[]>(rows);
+    const { data: rows = [], isLoading, isError, refetch } = useGetOpportunities();
     const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
     const { mutate: deleteOpportunity, isSuccess: isDeleteSuccess, isError: isDeleteError } = useDeleteOpportunity()
-    const [nextToRemove, setNextToRemove] = useState<string>("")
     const navigate = useNavigate();
-
-    useEffect(() => {
-        setDataRows(rows);
-    }, [rows]);
 
     const goToOpportunityInfo = (id: GridRowId) => () => {
         navigate(`/opportunityDetails/${id}`)
@@ -50,7 +43,6 @@ function OpportunityTable() {
         }).then((result) => {
             if (result.isConfirmed) {
                 deleteOpportunity(id as string)
-                setNextToRemove(id as string)
             }
         })
         ;
@@ -127,22 +119,20 @@ function OpportunityTable() {
     ];
 
     if (isDeleteSuccess) {
-        setDataRows(dataRows.filter((row) => row.id !== nextToRemove));
         Swal.fire("Deleted!", "The opportunity has been removed.", "success");
-        setNextToRemove("")
+        refetch()
     }
     if (isDeleteError) {
         Swal.fire("ERROR!", "The entry could not be properly deleted.", "warning");
-        setNextToRemove("")
     }
 
     if (isLoading) return <TableSkeleton rows={4} columns={7} />;
     if (isError) return <ErrorComponent message="An error occurred while fetching the information. Contact technical support and show them this code: Error loading..." />;
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Box sx={{ height: 500, width: '100%' }}>
+            <Box sx={{ height: '85%', width: '100%' }}>
                 <DataGrid
-                    rows={dataRows}
+                    rows={rows}
                     columns={columns}
                     editMode="row"
                     rowModesModel={rowModesModel}
