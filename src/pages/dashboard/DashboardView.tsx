@@ -4,6 +4,7 @@ import Loader from '../../components/common/Loader';
 import ErrorComponent from '../../components/common/ErrorComponent';
 import { useGetCustomers } from '../../hooks/useGetCustomers';
 import { OpportunityDashboard } from '../../utils/types';
+import ClientBarChart from '../../components/dashboard/Barchart';
 import Graphic2 from "../../components/dashboard/GraphicPieChart1";
 import BusinessLinesPieChart from '../../components/dashboard/BusinessLinesPieChart';
 
