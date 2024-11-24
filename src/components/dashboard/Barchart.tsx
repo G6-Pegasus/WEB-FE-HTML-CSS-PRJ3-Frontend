@@ -37,6 +37,7 @@ const ClientBarChart = () => {
   }, [opportunities, customers, loadingOpportunities, loadingCustomers]);
 
   return (
+    //console.log(chartData.categories),
     <div style={{ padding: '16px' }}>
       {!loadingOpportunities && !loadingCustomers ? (
         <BarChart
@@ -74,14 +75,16 @@ const ClientBarChart = () => {
           width={1200}
           height={500}
           margin={{ top: 50, right: 50, bottom: 100, left: 100 }} 
+          
           slotProps={{
             legend: {
                 //itemMarkHeight : 20
+                
             },
           }}
         />
       ) : (
-        <p>Loading data...</p>
+        <p></p>
       )}
     </div>
   );

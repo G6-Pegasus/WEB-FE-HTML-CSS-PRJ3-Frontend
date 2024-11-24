@@ -1,6 +1,6 @@
-export const BASE_URL = "https://web-fe-html-css-prj3-backend.onrender.com";
-//https://web-fe-html-css-prj3-backend.onrender.com/
-//import.meta.env.VITE_API_URL
+export const BASE_URL = import.meta.env.VITE_API_URL;
+//
+//
 export const fetcher = async (endpoint: string, options: RequestInit = {}) => {
     const isFormData = options.body instanceof FormData;
 
