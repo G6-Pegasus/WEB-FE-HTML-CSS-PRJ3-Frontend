@@ -29,10 +29,25 @@ const OpportunitiesByStatusChart = () => {
     ],
   }
 
+  const options = {
+    maintainAspectRatio: false, // No mantener la relación de aspecto
+    responsive: true, // Hacer el gráfico responsivo
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (tooltipItem: any) => {
+            const value = tooltipItem.raw;
+            return `${value.toFixed(2)}%`; // Mostrar el valor en porcentaje con dos decimales
+          },
+        },
+      },
+    },
+  };
+
   return (
-    <Box sx={{ width: 400, height: 400, textAlign: "center", padding: 2 }}>
-      <Typography variant="h5" gutterBottom>Opportunities per state</Typography>
-      <Pie data={chartData} options={{ responsive: true }} />
+    <Box sx={{ width: '100%', height: 400, textAlign: "center", padding: 2, marginBottom: 2.5 }}>
+      <h3 className="text-xl font-bold mb-4">Percentage of Opportunities by Business Line</h3>
+      <Pie data={chartData} options={options} />
     </Box>
   )
 }

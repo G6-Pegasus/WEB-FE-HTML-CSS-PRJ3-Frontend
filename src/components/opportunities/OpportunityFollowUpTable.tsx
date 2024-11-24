@@ -95,7 +95,7 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
     }
 
     return (
-        <div className="w-full max-h-96">
+        <div className="w-full max-h-96 mt-10">
             {selectedRow && openDialog && (
                 <UpdateDialog
                     open={openDialog}

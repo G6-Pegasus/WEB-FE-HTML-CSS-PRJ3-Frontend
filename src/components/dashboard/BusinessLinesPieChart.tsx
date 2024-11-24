@@ -3,7 +3,7 @@ import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Opportunity } from '../../utils/types';
 import { useGetOpportunities } from '../../hooks/useGetCustomerOpportunities';
-import TableSkeleton from '../common/TableSkeleton';
+import { CircularProgress, Box } from "@mui/material"; 
 import ErrorComponent from '../common/ErrorComponent';
 
 /* 
@@ -21,7 +21,7 @@ const BusinessLinesPieChart: React.FC = () => {
   const { data: opportunities, error, isLoading } = useGetOpportunities();
 
   // Mostrar un esqueleto de tabla mientras los datos están cargando
-  if (isLoading) return <TableSkeleton rows={4} columns={6} />;
+  if (isLoading) return <CircularProgress />;
   
   // Mostrar un componente de error si ocurre un error al obtener los datos
   if (error) {
@@ -83,9 +83,6 @@ const BusinessLinesPieChart: React.FC = () => {
     maintainAspectRatio: false, // No mantener la relación de aspecto
     responsive: true, // Hacer el gráfico responsivo
     plugins: {
-      legend: {
-        display: false, // Ocultar la leyenda predeterminada
-      },
       tooltip: {
         callbacks: {
           label: (tooltipItem: any) => {
@@ -99,25 +96,10 @@ const BusinessLinesPieChart: React.FC = () => {
 
   // Renderizar el gráfico de pastel y la leyenda personalizada
   return (
-    <div className="relative h-[700px] w-full flex flex-col items-center">
+    <Box sx={{ width: '100%', height: 400, textAlign: "center", padding: 2, marginBottom: 2.5 }}>
       <h3 className="text-xl font-bold mb-4">Percentage of Opportunities by Business Line</h3>
-      <div className="mt-4 h-[200px] w-full overflow-y-auto">
-        <ul className="flex flex-wrap justify-center">
-          {data.labels.map((label, index) => (
-            <li key={index} className="flex items-center mb-2 mr-4">
-              <span
-                className="w-4 h-4 mr-2"
-                style={{ backgroundColor: data.datasets[0].backgroundColor[index % data.datasets[0].backgroundColor.length] }}
-              ></span>
-              {label}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="h-[600px] w-full flex justify-center">
-        <Pie data={data} options={options} />
-      </div>
-    </div>
+      <Pie data={data} options={options} />
+    </Box>
   );
 };
 
