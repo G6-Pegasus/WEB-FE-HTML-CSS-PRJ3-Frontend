@@ -49,7 +49,9 @@ function OpportunityTable() {
     };
 
     const columns: GridColDef[] = [
-        { field: 'id', headerName: 'ID', width: 100, editable: false },
+        { field: 'id', headerName: 'ID', width: 100, editable: false, renderCell: (params) => (
+            <div data-testid={params.value}>{params.value}</div>
+        )},
         { field: 'businessName', headerName: 'Business Name', width: 200, editable: true },
         { field: 'businessLine', headerName: 'Business Line', width: 150, editable: true },
         { field: 'description', headerName: 'Description', width: 300, editable: true },
@@ -79,7 +81,7 @@ function OpportunityTable() {
             valueOptions: statusOptions,
             renderCell: (params) => (
                 <div className={`my-3 px-2 py-1 font-bold text-xs uppercase rounded-md select-none whitespace-nowrap ${
-                    params.row.status === 'Done' ? 'text-green-900 bg-green-500/20' :
+                    params.row.status === 'Executed' ? 'text-green-900 bg-green-500/20' :
                     params.row.status === 'Under study' ? 'text-blue-900 bg-blue-500/20' :
                     params.row.status === 'Opening' ? 'text-purple-900 bg-purple-500/20' :
                     params.row.status === 'Pending' ? 'text-yellow-900 bg-yellow-500/20' : ''

@@ -37,7 +37,8 @@ const ClientBarChart = () => {
   console.log(chartData.categories)
 
   return (
-    <div style={{ padding: '16px' }}>
+    <div className='w-full bg-white rounded-xl pb-8 p-2 text-center'>
+        <h3 className="text-xl font-bold mb-4">Total estimated vs total executed in opportunities</h3>
         <BarChart
           xAxis={[
             {
@@ -70,7 +71,7 @@ const ClientBarChart = () => {
             },
           }}
           height={500}
-          margin={{ top: 50, right: 50, bottom: 100, left: 100 }} 
+          margin={{ top: 50, right: 50, bottom: 40, left: 100 }} 
         />
     </div>
   );

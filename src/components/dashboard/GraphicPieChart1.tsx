@@ -45,7 +45,7 @@ const OpportunitiesByStatusChart = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', height: 400, textAlign: "center", padding: 2, marginBottom: 2.5 }}>
+    <Box sx={{ width: '100%', height: 400, textAlign: "center", padding: 2, marginBottom: 2 }}>
       <h3 className="text-xl font-bold mb-4">Percentage of Opportunities by Business Line</h3>
       <Pie data={chartData} options={options} />
     </Box>

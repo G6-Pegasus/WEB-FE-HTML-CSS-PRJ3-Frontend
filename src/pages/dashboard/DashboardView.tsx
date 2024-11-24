@@ -5,13 +5,13 @@ import BusinessLinesPieChart from '../../components/dashboard/BusinessLinesPieCh
 
 const DashboardView = () => {
     return <Main>
-        <div className='w-full flex-col justify-center items-center'>
+        <div className='w-full flex gap-5 flex-col justify-center items-center'>
             <ClientBarChart/>
-            <div className='flex flex-col justify-center items-center gap-10 md:flex-row md:justify-evenly mb-5'>
-                <div className='w-[50%]'>
+            <div className='w-full flex gap-5 flex-col justify-center items-center md:flex-row md:justify-between mb-2'>
+                <div className='w-full md:w-[49%] bg-white rounded-xl pb-8'>
                     <StatusPieChart />
                 </div>
-                <div className='w-[50%]'>
+                <div className='w-full md:w-[49%] bg-white rounded-xl pb-8'>
                     <BusinessLinesPieChart />
                 </div>
             </div>

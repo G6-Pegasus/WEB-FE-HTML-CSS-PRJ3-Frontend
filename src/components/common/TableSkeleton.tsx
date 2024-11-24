@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 
 const TableSkeleton = ({ rows = 5, columns = 4 }) => {
   return (
-    <TableContainer component={Paper}>
+    <TableContainer data-testid="skeleton" component={Paper}>
       <Table>
         <TableHead>
           <TableRow>

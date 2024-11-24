@@ -22,8 +22,12 @@ function FollowUpsTable() {
     }
 
     const columns: GridColDef[] = [
-        { field: 'opportunityId', headerName: 'Opportunity', width: 100, editable: false },
-        { field: 'contactType', headerName: 'Contact Type', width: 200, editable: true },
+        { field: 'opportunityId', headerName: 'Opportunity', width: 100, editable: false, renderCell: (params) => (
+            <div data-testid={params.value}>{params.value}</div>
+        )},
+        { field: 'contactType', headerName: 'Contact Type', width: 100, editable: true },
+        { field: 'Cname', headerName: 'Name', width: 150, renderCell: (params) => params.row.contactClient[0].Cname },
+        { field: 'Ccontact', headerName: 'Phone/Email', width: 250, renderCell: (params) => params.row.contactType === "call" ? params.row.contactClient[0].Cphone : params.row.contactClient[0].Cemail },
         {
             field: 'contactDate',
             headerName: 'Contact Date',

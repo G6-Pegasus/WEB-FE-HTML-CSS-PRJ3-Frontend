@@ -12,7 +12,7 @@ const OpportunityDetailsView = () => {
     const { data: opportunity, error, isLoading } = useGetOpportunityDetails(opportunityId as string)
 
     return <Main>
-        <section className="flex flex-col w-full justify-content-center items-center gap-5">
+        <section className="flex flex-col w-full justify-content-center items-center">
             {isLoading && <div className='w-full h-auto p-6'>
                 <Loader />
                 <TableSkeleton rows={3} columns={3} />

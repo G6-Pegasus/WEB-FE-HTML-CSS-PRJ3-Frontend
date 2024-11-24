@@ -59,7 +59,9 @@ function ClientTable() {
   };
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'NIT', width: 150, editable: true },
+    { field: 'id', headerName: 'NIT', width: 150, editable: true, renderCell: (params) => (
+      <div data-testid={params.value}>{params.value}</div>
+    )},
     { field: 'name', headerName: 'Name', width: 150, editable: true },
     { field: 'address', headerName: 'Address', width: 200, editable: true },
     { field: 'city', headerName: 'City', width: 120, editable: true },

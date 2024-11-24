@@ -105,7 +105,7 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                 />
             )}
 
-            <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border mt-4">
+            <div className="relative flex flex-col w-full h-full text-slate-700 bg-white shadow-md rounded-xl bg-clip-border">
                 <div className="relative mx-4 mt-4 overflow-hidden text-slate-700 bg-white rounded-none bg-clip-border">
                     <div className="flex items-center justify-between ">
                         <div>
@@ -194,6 +194,30 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                     </p>
                                 </th>                              
                                 <th
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('Cname', sortConfig, setSortConfig)}>
+                                    <p
+                                    className="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500 max-w-xs break-words">
+                                    Contact Name {sortConfig?.key === 'Cname' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
+                                        stroke="currentColor" aria-hidden="true" className="w-4 h-4">
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                                    </svg>
+                                    </p>
+                                </th> 
+                                <th
+                                    className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40" onClick={() => handleSort('Ccontact', sortConfig, setSortConfig)}>
+                                    <p
+                                    className="flex items-center justify-between gap-2 font-sans text-sm  font-normal leading-none text-slate-500 max-w-xs break-words">
+                                    Contact Phone/Email {sortConfig?.key === 'Ccontact' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
+                                        stroke="currentColor" aria-hidden="true" className="w-4 h-4">
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                        d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"></path>
+                                    </svg>
+                                    </p>
+                                </th>                             
+                                <th
                                     className="p-4 transition-colors cursor-pointer border-y border-slate-200 bg-slate-50 hover:bg-slate-100 w-40">                        
                                 </th>                                                               
                             </tr>
@@ -244,6 +268,20 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                             ''}`}>
                                                 {followUpStep.contactType}
                                             </div>                                    
+                                        </td>
+                                        <td className="p-4 border-b border-slate-200 w-40 break-words">
+                                            <div className="flex flex-col">
+                                                <p className="text-sm text-slate-500">
+                                                {followUpStep.contactClient[0].Cname}
+                                                </p>
+                                            </div>
+                                        </td>
+                                        <td className="p-4 border-b border-slate-200 w-40 break-words">
+                                            <div className="flex flex-col">
+                                                <p className="text-sm text-slate-500">
+                                                {followUpStep.contactType === "call" ? followUpStep.contactClient[0].Cphone : followUpStep.contactClient[0].Cemail}
+                                                </p>
+                                            </div>
                                         </td>
                                         <td className="p-4 border-b border-slate-200">                                            
                                             <button onClick={() => handleEditClick(followUpStep)}
