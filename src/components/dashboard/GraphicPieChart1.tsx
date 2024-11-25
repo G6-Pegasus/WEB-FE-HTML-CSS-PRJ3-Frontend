@@ -24,7 +24,7 @@ const OpportunitiesByStatusChart = () => {
       {
         label: "Opportunities in this state",
         data: chartValues,
-        backgroundColor: ["#447842", "#4d62b1", "#6b3d9f", "#fc9445"], 
+        backgroundColor: ["#4d62b1", "#6b3d9f", "#ffa652", "#64c27b"], 
       },
     ],
   }

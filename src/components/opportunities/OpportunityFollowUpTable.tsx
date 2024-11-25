@@ -248,7 +248,7 @@ const OpportunityFollowUpTable = ({ opportunity }: OpportunityFollowUpTableProps
                                         <td className="p-4 border-b border-slate-200 w-40 break-words">
                                             <div className={`border-b border-slate-200 relative grid items-center px-2 py-1 font-sans text-xs font-bold uppercase rounded-md select-none whitespace-nowrap ${
                                             followUpStep.status === 'Done' ? 'text-green-900 bg-green-500/20' :
-                                            followUpStep.status === 'In Review' ? 'text-blue-900 bg-blue-500/20' :
+                                            followUpStep.status === 'In Review' ? 'text-orange-900 bg-orange-500/20' :
                                             followUpStep.status === 'In Progress' ? 'text-purple-900 bg-purple-500/20' :
                                             followUpStep.status === 'Pending' ? 'text-yellow-900 bg-yellow-500/20' :
                                             ''}`}>

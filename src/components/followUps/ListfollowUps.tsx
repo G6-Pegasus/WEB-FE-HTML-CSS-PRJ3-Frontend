@@ -58,6 +58,7 @@ function FollowUpsTable() {
                     params.row.status === 'Done' ? 'text-green-900 bg-green-500/20' :
                     params.row.status === 'In Progress' ? 'text-blue-900 bg-blue-500/20' :
                     params.row.status === 'Opening' ? 'text-purple-900 bg-purple-500/20' :
+                    params.row.status === 'In Review' ? 'text-orange-900 bg-orange-500/20' :
                     params.row.status === 'Pending' ? 'text-yellow-900 bg-yellow-500/20' : ''
                 }`}>
                     {params.row.status}
